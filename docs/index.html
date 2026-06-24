@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>立委持股地圖 — 第11屆立法委員財產申報</title>
-<meta name="description" content="第11屆立法委員（2024年就任）依法申報之股票與基金持股視覺化。資料源自監察院廉政專刊，由 legislator-wealth.tw 解析。">
+<title>立委財產圖 — 第11屆立法委員財產申報</title>
+<meta name="description" content="第11屆立法委員（2024年就任）依法申報之存款、股票、不動產、負債完整視覺化。資料源自監察院廉政專刊 PDF。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet">
@@ -262,9 +262,9 @@
 
 <div class="wrap">
   <p class="eyebrow">立委財產申報 <span class="en">Legislator Wealth · 11th Term</span></p>
-  <h1>立委持股地圖</h1>
-  <p class="lede">第11屆立法委員（2024年就任）依法向監察院申報之股票與基金持股。108位立委中，82位申報持有有價證券，申報股票總估算市值約 18.6億元。</p>
-  <p class="datasrc">資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">legislator-wealth.tw</a>（解析自監察院廉政專刊）· 申報僅涵蓋有價證券；不動產、存款等類別尚無政府結構化開放資料。</p>
+  <h1>立委財產圖</h1>
+  <p class="lede">第11屆立法委員（2024年就任）依監察院廉政專刊申報之完整財產資料，包含銀行存款、股票基金、不動產及負債。</p>
+  <p class="datasrc">資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">legislator-wealth.tw</a>（有價證券估值）· 監察院廉政專刊 PDF（存款、不動產、負債）· 申報數據為面額或申報值，非市值。</p>
 
   <!-- Stats -->
   <div class="stats" id="statsBar">
@@ -303,7 +303,7 @@
   <div id="tabSearch" hidden></div>
 
   <div class="footer">
-    <p>資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">政治人物持股平台（legislator-wealth.tw）</a>，原始資料出自<a href="https://sunshine.cy.gov.tw" target="_blank" rel="noopener">監察院陽光法令主題網</a>廉政專刊。本頁面純供公共監督與研究用途，不作任何投資建議，亦不代表對任何立委之負面評價；持股申報僅涵蓋有價證券，不代表全部財產。如有疑問請以監察院公告為準。</p>
+    <p>資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">legislator-wealth.tw</a>（有價證券估值）· <a href="https://sunshine.cy.gov.tw" target="_blank" rel="noopener">監察院廉政專刊</a> PDF（存款、不動產、負債，由本站 pdfplumber 解析）。本頁面純供公共監督與研究用途，不作任何投資建議；存款與負債為申報面額，不動產未申報市值，如有疑問請以監察院公告為準。</p>
   </div>
 </div>
 
@@ -388,25 +388,16 @@ const PARTY_COLOR={
   '台灣民眾黨':'#1BBCCC',
   '無黨籍':'#777777',
 };
-const PARTY_SHORT={
-  '中國國民黨':'國',
-  '民主進步黨':'民',
-  '台灣民眾黨':'眾',
-  '無黨籍':'無',
-};
-const PARTY_ALIAS={
-  'kmt':'中國國民黨','dpp':'民主進步黨','tpp':'台灣民眾黨','ind':'無黨籍',
-};
 
-let DATA=[];
-let rankSort='desc';
+let DATA=[];      // stock API
+let FULL={};      // slug → full property data
+let rankMetric='deposits';
 let showAllRank=false;
 let searchQ='';
 let filterParty='';
 let curTab='rank';
 
 function pColor(p){return PARTY_COLOR[p]||'#aaa';}
-function pShort(p){return PARTY_SHORT[p]||'？';}
 
 function fmtMoney(v){
   if(!v||v===0)return '—';
@@ -415,43 +406,73 @@ function fmtMoney(v){
   return v.toLocaleString()+'元';
 }
 
-function partyOf(lg){
-  return lg.meta?.party||lg.party||PARTY_ALIAS[lg.meta?.party]||'無黨籍';
+function partyOf(lg){return lg.meta?.party||lg.party||'無黨籍';}
+function stockValOf(lg){return lg.stockSummary?.estimatedMarketValueTotal||0;}
+function fullOf(lg){return FULL[lg.slug]||{};}
+function depositOf(lg){return fullOf(lg).totals?.deposits||0;}
+function debtOf(lg){return fullOf(lg).totals?.debts||0;}
+function landCountOf(lg){
+  const re=fullOf(lg).real_estate||{};
+  return (re.land||0)+(re.building||0);
 }
 
-function valOf(lg){
-  return lg.stockSummary?.estimatedMarketValueTotal||0;
+function metricValOf(lg){
+  if(rankMetric==='stocks')return stockValOf(lg);
+  if(rankMetric==='deposits')return depositOf(lg);
+  if(rankMetric==='debts')return debtOf(lg);
+  if(rankMetric==='land')return landCountOf(lg);
+  return depositOf(lg);
 }
 
 /* ----- Init ----- */
 async function init(){
   try{
-    const res=await fetch(`${API}/api/legislators.json`);
-    if(!res.ok)throw new Error('fetch failed');
-    DATA=await res.json();
+    const [stockRes,fullRes]=await Promise.all([
+      fetch(`${API}/api/legislators.json`),
+      fetch('./data/legislators_full.json'),
+    ]);
+    if(!stockRes.ok)throw new Error('stock fetch failed');
+    DATA=await stockRes.json();
+    if(fullRes.ok){
+      const arr=await fullRes.json();
+      arr.forEach(f=>{if(f.slug)FULL[f.slug]=f;});
+    }
     renderStats();
     renderRank();
   }catch(e){
     document.getElementById('tabRank').innerHTML=
-      `<p style="color:var(--shu-solid);padding:40px 0;">資料載入失敗，請稍後重新整理。</p>`;
+      '<p style="color:var(--shu-solid);padding:40px 0;">資料載入失敗，請稍後重新整理。</p>';
   }
 }
 
 /* ----- Stats ----- */
 function renderStats(){
-  const holders=DATA.filter(lg=>valOf(lg)>0);
-  const total=DATA.reduce((s,lg)=>s+valOf(lg),0);
-  const top=[...DATA].sort((a,b)=>valOf(b)-valOf(a))[0];
+  const fullArr=Object.values(FULL);
+  const totalDep=fullArr.reduce((s,f)=>s+(f.totals?.deposits||0),0);
+  const totalDebt=fullArr.reduce((s,f)=>s+(f.totals?.debts||0),0);
+  const totalLand=fullArr.reduce((s,f)=>s+(f.real_estate?.land||0)+(f.real_estate?.building||0),0);
 
-  document.getElementById('statTotal').innerHTML=
-    fmtMoney(total)+' <span class="u">元</span>';
-  document.getElementById('statHolders').innerHTML=
-    holders.length+' <span class="u">人</span>';
-  const topVal=valOf(top);
-  document.getElementById('statTop').innerHTML=
-    fmtMoney(topVal)+' <span class="u">元</span>';
-  document.getElementById('statTopName').textContent=
-    top?`${top.name}（${partyOf(top)}）`:'';
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat">
+      <div class="k">本屆立委</div>
+      <div class="v">108 <span class="u">人</span></div>
+      <div class="s">第11屆立法院</div>
+    </div>
+    <div class="stat">
+      <div class="k">全院存款申報合計</div>
+      <div class="v">${fmtMoney(totalDep)} <span class="u">元</span></div>
+      <div class="s">各立委申報銀行存款</div>
+    </div>
+    <div class="stat">
+      <div class="k">全院負債申報合計</div>
+      <div class="v">${fmtMoney(totalDebt)} <span class="u">元</span></div>
+      <div class="s">申報債務總金額</div>
+    </div>
+    <div class="stat">
+      <div class="k">不動產筆數合計</div>
+      <div class="v">${totalLand.toLocaleString()} <span class="u">筆</span></div>
+      <div class="s">土地 + 建物（含配偶子女）</div>
+    </div>`;
 }
 
 /* ----- Tab switching ----- */
@@ -469,56 +490,56 @@ function switchTab(tab){
 }
 
 /* ----- Rank tab ----- */
+const METRIC_LABEL={
+  stocks:'股票估值',deposits:'存款總額',debts:'負債總額',land:'不動產筆數',
+};
+
 function renderRank(){
-  const sorted=[...DATA].sort((a,b)=>{
-    if(rankSort==='desc')return valOf(b)-valOf(a);
-    if(rankSort==='asc')return valOf(a)-valOf(b);
-    return a.name.localeCompare(b.name,'zh');
-  });
-  const maxVal=Math.max(...sorted.map(valOf),1);
+  const sorted=[...DATA].sort((a,b)=>metricValOf(b)-metricValOf(a));
+  const maxVal=Math.max(...sorted.map(metricValOf),1);
   const SHOW=40;
   const shown=showAllRank?sorted:sorted.slice(0,SHOW);
+  const isLand=rankMetric==='land';
 
-  const rows=shown.map((lg,i)=>{
-    const val=valOf(lg);
+  const rows=shown.map(lg=>{
+    const val=metricValOf(lg);
     const party=partyOf(lg);
     const color=pColor(party);
     const barW=val>0?Math.max(1,Math.round(val/maxVal*100)):0;
     const globalRank=sorted.indexOf(lg)+1;
-    return `<div class="rank-row${val===0?' rank-zero':''}" onclick="openHoldingModal('${lg.slug}')">
+    const displayVal=isLand?(val>0?val+'筆':'—'):(val>0?fmtMoney(val):'—');
+    return `<div class="rank-row${val===0?' rank-zero':''}" onclick="openModal('${lg.slug}')">
       <span class="rank-n">${globalRank}</span>
       <span class="rank-name">${lg.name}</span>
       <span class="party-dot" style="background:${color}"></span>
       <div class="rank-bar-wrap">
         ${val>0?`<div class="rank-bar" style="width:${barW}%;background:${color}"></div>`:
-                `<span class="rank-nil">無申報</span>`}
+                '<span class="rank-nil">無申報</span>'}
       </div>
-      <span class="rank-val">${val>0?fmtMoney(val):'—'}</span>
+      <span class="rank-val">${displayVal}</span>
     </div>`;
   }).join('');
 
+  const metricBtns=['stocks','deposits','debts','land'].map(m=>
+    `<button class="sort-btn${rankMetric===m?' active':''}"
+      onclick="rankMetric='${m}';showAllRank=false;renderRank()">
+      ${METRIC_LABEL[m]}
+    </button>`).join('');
+
   const showAllBtn=!showAllRank&&sorted.length>SHOW?
     `<button class="show-all-btn" onclick="showAllRank=true;renderRank()">
-      顯示全部 ${sorted.length} 人（含無申報者）
+      顯示全部 ${sorted.length} 人
     </button>`:'';
 
   document.getElementById('tabRank').innerHTML=`
     <div class="rank-controls">
-      <span class="rank-sort-label">排序</span>
-      <div class="rank-sort-btns">
-        <button class="sort-btn${rankSort==='desc'?' active':''}"
-          onclick="rankSort='desc';showAllRank=false;renderRank()">持股高→低</button>
-        <button class="sort-btn${rankSort==='asc'?' active':''}"
-          onclick="rankSort='asc';showAllRank=false;renderRank()">持股低→高</button>
-        <button class="sort-btn${rankSort==='name'?' active':''}"
-          onclick="rankSort='name';showAllRank=false;renderRank()">姓名</button>
-      </div>
+      <span class="rank-sort-label">排序依據</span>
+      <div class="rank-sort-btns">${metricBtns}</div>
     </div>
     <div class="rank-list">${rows}</div>
     ${showAllBtn}
     <p style="font-size:11.5px;color:var(--ink-faint);margin-top:10px">
-      點擊任一列查看個別持股明細 · 顯示中：${shown.length}/${sorted.length} 人
-    </p>`;
+      點擊任一列查看完整財產明細 · 顯示：${shown.length}/${sorted.length} 人</p>`;
 }
 
 /* ----- Party tab ----- */
@@ -526,79 +547,68 @@ function renderParty(){
   const parties=['中國國民黨','民主進步黨','台灣民眾黨','無黨籍'];
   const stats=Object.fromEntries(parties.map(p=>{
     const members=DATA.filter(lg=>partyOf(lg)===p);
-    const holders=members.filter(lg=>valOf(lg)>0);
-    const total=members.reduce((s,lg)=>s+valOf(lg),0);
-    const avg=holders.length?Math.round(total/holders.length):0;
-    const topLg=[...members].sort((a,b)=>valOf(b)-valOf(a))[0];
-    return [p,{count:members.length,holders:holders.length,total,avg,top:topLg}];
+    const totalDep=members.reduce((s,lg)=>s+depositOf(lg),0);
+    const totalDebt=members.reduce((s,lg)=>s+debtOf(lg),0);
+    const totalStock=members.reduce((s,lg)=>s+stockValOf(lg),0);
+    const topDep=[...members].sort((a,b)=>depositOf(b)-depositOf(a))[0];
+    return [p,{count:members.length,totalDep,totalDebt,totalStock,topDep}];
   }));
 
-  const maxTotal=Math.max(...parties.map(p=>stats[p].total),1);
-  const maxAvg=Math.max(...parties.map(p=>stats[p].avg),1);
+  const maxDep=Math.max(...parties.map(p=>stats[p].totalDep),1);
+  const maxDebt=Math.max(...parties.map(p=>stats[p].totalDebt),1);
 
   const cards=parties.map(p=>{
-    const s=stats[p];
-    const c=pColor(p);
+    const s=stats[p]; const c=pColor(p);
     return `<div class="party-card" style="--pc:${c}">
       <div class="pc-name" style="border-bottom-color:${c}">${p}</div>
-      <div class="pc-total">${fmtMoney(s.total)}</div>
-      <div class="pc-label">總股票申報估值</div>
+      <div class="pc-total">${fmtMoney(s.totalDep)}</div>
+      <div class="pc-label">存款申報合計</div>
       <div class="pc-row"><span>立委人數</span><span class="val">${s.count} 人</span></div>
-      <div class="pc-row"><span>有申報持股</span><span class="val">${s.holders} 人</span></div>
-      <div class="pc-row"><span>平均（有申報者）</span><span class="val">${fmtMoney(s.avg)}</span></div>
+      <div class="pc-row"><span>負債合計</span><span class="val">${fmtMoney(s.totalDebt)}</span></div>
+      <div class="pc-row"><span>股票估值合計</span><span class="val">${fmtMoney(s.totalStock)}</span></div>
       <div class="pc-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">
-        <span>最高：${s.top?.name||'—'}</span>
-        <span class="val">${fmtMoney(valOf(s.top)||0)}</span>
+        <span>存款最高：${s.topDep?.name||'—'}</span>
+        <span class="val">${fmtMoney(depositOf(s.topDep))}</span>
       </div>
     </div>`;
   }).join('');
 
-  const barsTotal=parties.map(p=>{
-    const s=stats[p];
-    const w=s.total?Math.round(s.total/maxTotal*100):0;
-    const c=pColor(p);
+  const barsDep=parties.map(p=>{
+    const s=stats[p]; const w=s.totalDep?Math.round(s.totalDep/maxDep*100):0; const c=pColor(p);
     return `<div class="pc-bar-row">
       <span class="pc-bar-label">${p.replace('中國','').replace('台灣','').replace('民主進步','民進')}</span>
-      <div class="pc-bar-wrap">
-        <div class="pc-bar" style="width:${w}%;background:${c}"></div>
-      </div>
-      <span class="pc-bar-val">${fmtMoney(s.total)}</span>
+      <div class="pc-bar-wrap"><div class="pc-bar" style="width:${w}%;background:${c}"></div></div>
+      <span class="pc-bar-val">${fmtMoney(s.totalDep)}</span>
     </div>`;
   }).join('');
 
-  const barsAvg=parties.map(p=>{
-    const s=stats[p];
-    const w=s.avg?Math.round(s.avg/maxAvg*100):0;
-    const c=pColor(p);
+  const barsDebt=parties.map(p=>{
+    const s=stats[p]; const w=s.totalDebt?Math.round(s.totalDebt/maxDebt*100):0; const c=pColor(p);
     return `<div class="pc-bar-row">
       <span class="pc-bar-label">${p.replace('中國','').replace('台灣','').replace('民主進步','民進')}</span>
-      <div class="pc-bar-wrap">
-        <div class="pc-bar" style="width:${w}%;background:${c}"></div>
-      </div>
-      <span class="pc-bar-val">${fmtMoney(s.avg)}</span>
+      <div class="pc-bar-wrap"><div class="pc-bar" style="width:${w}%;background:${c}"></div></div>
+      <span class="pc-bar-val">${fmtMoney(s.totalDebt)}</span>
     </div>`;
   }).join('');
 
   document.getElementById('tabParty').innerHTML=`
     <div class="party-grid">${cards}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
       <div class="party-chart">
-        <div class="pc-chart-title">各政黨 · 總申報估值比較</div>
-        ${barsTotal}
+        <div class="pc-chart-title">各政黨 · 存款申報合計</div>${barsDep}
       </div>
       <div class="party-chart">
-        <div class="pc-chart-title">各政黨 · 平均申報估值（有申報者）</div>
-        ${barsAvg}
+        <div class="pc-chart-title">各政黨 · 負債申報合計</div>${barsDebt}
       </div>
     </div>
     <p style="font-size:12px;color:var(--ink-faint);margin-top:16px;line-height:1.8">
-      ※ 股票申報估值為依監察院廉政專刊申報數據，股數乘以台灣證交所收盤價之估算，非申報當時市值。未申報股票之立委（26位）未計入平均。
+      ※ 存款、負債為監察院廉政專刊 PDF 申報數據；股票估值為股數 × 收盤價估算。資料含配偶與未成年子女申報。
     </p>`;
 }
 
 /* ----- Search tab ----- */
 function renderSearch(){
-  const searchEl=`
+  document.getElementById('tabSearch').innerHTML=`
     <div class="search-controls">
       <input class="search-input" id="searchInput" placeholder="搜尋姓名⋯"
         value="${searchQ}" oninput="searchQ=this.value;updateCards()">
@@ -612,14 +622,12 @@ function renderSearch(){
     </div>
     <div class="card-grid" id="cardGrid"></div>
     <p id="cardCount" style="font-size:11.5px;color:var(--ink-faint);margin-top:12px"></p>`;
-  document.getElementById('tabSearch').innerHTML=searchEl;
   updateCards();
 }
 
 function updateFilterBtns(){
   document.querySelectorAll('.filter-btn').forEach((b,i)=>{
-    const parties=['','中國國民黨','民主進步黨','台灣民眾黨','無黨籍'];
-    b.classList.toggle('active',filterParty===parties[i]);
+    b.classList.toggle('active',filterParty===['','中國國民黨','民主進步黨','台灣民眾黨','無黨籍'][i]);
   });
 }
 
@@ -629,85 +637,95 @@ function updateCards(){
     if(filterParty&&partyOf(lg)!==filterParty)return false;
     if(q&&!lg.name.includes(q))return false;
     return true;
-  }).sort((a,b)=>valOf(b)-valOf(a));
+  }).sort((a,b)=>depositOf(b)-depositOf(a));
 
   const grid=document.getElementById('cardGrid');
-  const count=document.getElementById('cardCount');
+  const cnt=document.getElementById('cardCount');
   if(!grid)return;
 
   grid.innerHTML=filtered.map(lg=>{
-    const val=valOf(lg);
     const party=partyOf(lg);
     const color=pColor(party);
-    const initials=lg.name.slice(-1);
-    return `<div class="lg-card" id="card-${lg.slug}" onclick="toggleCard('${lg.slug}')">
+    const dep=depositOf(lg);
+    const debt=debtOf(lg);
+    const land=landCountOf(lg);
+    return `<div class="lg-card" id="card-${lg.slug}" onclick="openModal('${lg.slug}')">
       <div class="card-hd">
         <div class="card-avatar" style="color:${color};border:2px solid ${color}22">
           <img src="${API}/avatars/${encodeURIComponent(lg.name)}.jpg"
             onerror="this.style.display='none'" alt="${lg.name}">
-          ${initials}
+          ${lg.name.slice(-1)}
         </div>
         <div class="card-info">
           <div class="card-name">${lg.name}</div>
           <span class="party-tag" style="background:${color}">${party.replace('中國','').replace('台灣','')}</span>
         </div>
       </div>
-      <div class="card-val">${val>0?fmtMoney(val):'—'}</div>
-      <div class="card-val-label">股票申報估值</div>
-      <div class="card-date">申報日：${lg.latestDeclarationDate||'—'}</div>
-      <div class="holdings-wrap" id="hw-${lg.slug}">
-        ${renderHoldingsList(lg)}
+      <div class="card-val">${fmtMoney(dep)}</div>
+      <div class="card-val-label">銀行存款</div>
+      <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--ink-faint)">
+        <span>負債 <b style="color:${debt>0?'var(--shu-solid)':'var(--ink-faint)'};font-family:var(--latin)">${fmtMoney(debt)}</b></span>
+        <span>不動產 <b style="color:var(--ink-strong);font-family:var(--latin)">${land>0?land+'筆':'—'}</b></span>
       </div>
+      <div class="card-date">申報日：${lg.latestDeclarationDate||'—'}</div>
     </div>`;
   }).join('');
 
-  count.textContent=`顯示 ${filtered.length} / ${DATA.length} 人`;
+  cnt.textContent=`顯示 ${filtered.length} / ${DATA.length} 人`;
 }
 
-function toggleCard(slug){
-  const card=document.getElementById(`card-${slug}`);
-  if(card)card.classList.toggle('expanded');
-}
-
-function renderHoldingsList(lg){
-  const h=lg.holdings||[];
-  if(!h.length)return `<div class="holdings-title">持股明細</div><p class="no-holdings">無申報有價證券</p>`;
-  const sorted=[...h].sort((a,b)=>(b.ntdTotal||0)-(a.ntdTotal||0));
-  const rows=sorted.map(it=>`
-    <div class="holding-row">
-      <span class="h-name ${it.source==='stock'?'h-src-stock':'h-src-fund'}">${it.name}</span>
-      <span class="h-owner">${it.owner}</span>
-      <span class="h-val">${fmtMoney(it.marketValue||it.ntdTotal||0)}</span>
-    </div>`).join('');
-  return `<div class="holdings-title">持股明細（共${h.length}筆）</div>${rows}`;
-}
-
-/* ----- Holdings modal (from rank tab) ----- */
-function openHoldingModal(slug){
+/* ----- Full property modal ----- */
+function openModal(slug){
   const lg=DATA.find(d=>d.slug===slug);
   if(!lg)return;
   const existing=document.getElementById('holdModal');
   if(existing)existing.remove();
 
-  const val=valOf(lg);
   const party=partyOf(lg);
   const color=pColor(party);
-  const h=lg.holdings||[];
-  const sorted=[...h].sort((a,b)=>(b.ntdTotal||0)-(a.ntdTotal||0));
-  const rows=sorted.length?sorted.map(it=>`
+  const full=fullOf(lg);
+  const totals=full.totals||{};
+  const re=full.real_estate||{};
+  const deposits=full.deposits||[];
+  const debts=full.debts||[];
+
+  const h=[...(lg.holdings||[])].sort((a,b)=>(b.ntdTotal||0)-(a.ntdTotal||0));
+  const stockRows=h.length?h.slice(0,10).map(it=>`
     <div class="holding-row">
       <span class="h-name ${it.source==='stock'?'h-src-stock':'h-src-fund'}">${it.name}</span>
       <span class="h-owner">${it.owner}</span>
       <span class="h-val">${fmtMoney(it.marketValue||it.ntdTotal||0)}</span>
+    </div>`).join('')+(h.length>10?`<p style="font-size:11px;color:var(--ink-faint);margin:6px 0 0">… 另 ${h.length-10} 筆</p>`:''):
+    '<p class="no-holdings">無申報有價證券</p>';
+
+  const depsByNtd=[...deposits].sort((a,b)=>b.ntd-a.ntd);
+  const depRows=depsByNtd.length?depsByNtd.slice(0,8).map(d=>`
+    <div class="holding-row">
+      <span class="h-name">${d.bank}</span>
+      <span class="h-owner">${d.owner}${d.currency!=='新臺幣'?' ('+d.currency+')':''}</span>
+      <span class="h-val">${fmtMoney(d.ntd)}</span>
+    </div>`).join('')+(depsByNtd.length>8?`<p style="font-size:11px;color:var(--ink-faint);margin:6px 0 0">… 另 ${depsByNtd.length-8} 筆</p>`:''):
+    '<p class="no-holdings">無申報存款明細</p>';
+
+  const debtRows=debts.length?debts.map(d=>`
+    <div class="holding-row">
+      <span class="h-name">${d.type}</span>
+      <span class="h-owner">${d.owner}${d.note?' · '+d.note.slice(0,14):''}</span>
+      <span class="h-val" style="color:var(--shu-solid)">${fmtMoney(d.amount)}</span>
     </div>`).join(''):
-    `<p class="no-holdings">無申報有價證券</p>`;
+    '<p class="no-holdings">無解析負債明細（總額見上）</p>';
+
+  function section(title,content){
+    return `<div style="border-top:1px solid var(--line);padding-top:14px;margin-top:14px">
+      <div class="holdings-title">${title}</div>${content}</div>`;
+  }
 
   const modal=document.createElement('div');
   modal.id='holdModal';
   modal.style.cssText='position:fixed;inset:0;z-index:8888;background:rgba(0,0,0,.4);'+
     'display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
   modal.innerHTML=`
-    <div style="background:var(--panel);max-width:540px;width:100%;padding:28px 32px;
+    <div style="background:var(--panel);max-width:580px;width:100%;padding:28px 32px;
       position:relative;max-height:90vh;overflow-y:auto">
       <button onclick="document.getElementById('holdModal').remove()"
         style="position:absolute;top:14px;right:16px;border:none;background:none;
@@ -717,18 +735,28 @@ function openHoldingModal(slug){
         <span style="display:inline-block;width:10px;height:10px;border-radius:50%;
           background:${color};margin-right:6px;vertical-align:middle"></span>${party}
       </p>
-      <h3 style="font-family:var(--serif);font-size:22px;margin:0 0 4px;
+      <h3 style="font-family:var(--serif);font-size:22px;margin:0 0 16px;
         color:var(--ink-strong)">${lg.name}</h3>
-      <p style="font-family:var(--latin);font-size:28px;font-weight:600;
-        color:${val>0?'var(--ink-strong)':'var(--ink-faint)'};margin:0 0 6px">
-        ${val>0?fmtMoney(val):'無股票申報'}
-      </p>
-      <p style="font-size:11.5px;color:var(--ink-faint);margin:0 0 20px">
-        申報日期：${lg.latestDeclarationDate||'—'}</p>
-      <div style="border-top:1px solid var(--line);padding-top:14px">
-        <div class="holdings-title">持股明細（共${h.length}筆）</div>
-        ${rows}
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+        background:var(--line);border:1px solid var(--line);margin-bottom:4px">
+        ${[
+          ['銀行存款',fmtMoney(totals.deposits||0),null],
+          ['有價證券（面額）',fmtMoney(totals.securities||0),null],
+          ['不動產','土地 '+(re.land||0)+' 筆・建物 '+(re.building||0)+' 筆',null],
+          ['負債',fmtMoney(totals.debts||0),'var(--shu-solid)'],
+        ].map(([k,v,c])=>`
+          <div style="background:var(--panel);padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+              text-transform:uppercase;margin-bottom:4px">${k}</div>
+            <div style="font-family:var(--latin);font-weight:600;font-size:18px;
+              color:${c||'var(--ink-strong)'}">${v}</div>
+          </div>`).join('')}
       </div>
+      <p style="font-size:11px;color:var(--ink-faint);margin:6px 0 0">
+        申報日期：${lg.latestDeclarationDate||'—'}</p>
+      ${section('存款明細（前8筆，依金額排列）',depRows)}
+      ${section('有價證券（前10筆）',stockRows)}
+      ${section('負債明細'+(totals.debts?'（合計'+fmtMoney(totals.debts)+'）':''),debtRows)}
     </div>`;
   modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
   document.body.appendChild(modal);
