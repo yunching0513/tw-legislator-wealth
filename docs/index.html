@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>立委持股地圖 — 第11屆立法委員財產申報</title>
+<meta name="description" content="第11屆立法委員（2024年就任）依法申報之股票與基金持股視覺化。資料源自監察院廉政專刊，由 legislator-wealth.tw 解析。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2F2F2; --panel:#FFFFFF; --panel-soft:#F1F1F1;
+    --ink:#333333; --ink-strong:#000000; --ink-faint:#9a9a9a;
+    --accent:#b8a98c;
+    --midori:rgba(46,107,78,.9); --midori-solid:#2E6B4E; --midori-soft:#D6DFD7;
+    --shu:rgba(166,57,44,.9); --shu-solid:#A6392C; --shu-soft:#E7D3CC;
+    --tint:#D6DCE0; --line:#dcdcdc;
+    --ls:0.08em; --ls-wide:0.16em;
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --latin:"Cormorant","Noto Serif TC",serif;
+    --serif:"Noto Serif TC",serif;
+    --body:"DM Sans","Noto Sans TC",sans-serif;
+    --gothic:"Noto Sans TC",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);
+    letter-spacing:var(--ls);line-height:1.7;-webkit-font-smoothing:antialiased;font-size:15px}
+
+  /* ===== Gate ===== */
+  #gateOverlay{position:fixed;inset:0;z-index:9999;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;overflow-y:auto}
+  #gateOverlay[hidden]{display:none}
+  .gate-card{background:var(--panel);border:1px solid var(--line);
+    max-width:520px;width:100%;padding:36px 44px 38px;margin:auto}
+  .gate-ey{font-family:var(--body);font-size:10.5px;letter-spacing:var(--ls-wide);
+    text-transform:uppercase;color:var(--ink-faint);margin:0 0 12px}
+  .gate-ti{font-family:var(--serif);font-weight:600;font-size:21px;
+    color:var(--ink-strong);margin:0 0 10px;letter-spacing:.02em}
+  .gate-de{font-size:13.5px;color:#555;margin:0 0 26px;line-height:1.6}
+  .gate-q{margin:0 0 18px}
+  .gate-ql{font-family:var(--serif);font-weight:500;font-size:14.5px;
+    color:var(--ink-strong);margin:0 0 8px}
+  .gate-opts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .gate-opt{display:flex;align-items:center;gap:9px;padding:10px 12px;
+    min-height:46px;border:1px solid var(--line);cursor:pointer;font-size:14px;
+    font-family:var(--gothic);background:var(--panel);
+    transition:border-color .12s,background .12s;user-select:none;
+    letter-spacing:.02em;-webkit-tap-highlight-color:transparent}
+  .gate-opt:hover{border-color:var(--accent);background:var(--panel-soft)}
+  .gate-opt.sel{border-color:var(--shu-solid);background:var(--shu-soft)}
+  .gate-rb{width:14px;height:14px;border-radius:50%;border:1.5px solid #bbb;
+    flex-shrink:0;transition:border-color .12s,background .12s}
+  .gate-opt.sel .gate-rb{border-color:var(--shu-solid);background:var(--shu-solid)}
+  .gate-sub{width:100%;padding:14px;background:var(--ink-strong);color:#fff;
+    border:none;cursor:pointer;margin-top:16px;font-family:var(--body);
+    font-size:14px;letter-spacing:var(--ls-wide);font-weight:500;
+    -webkit-tap-highlight-color:transparent}
+  .gate-sub:hover{background:var(--shu-solid)}
+  .gate-sub:disabled{opacity:.4;cursor:default}
+  .gate-msg{margin-top:10px;font-size:12.5px;text-align:center;
+    letter-spacing:.02em;color:var(--shu-solid)}
+  .gate-msg.ok{color:var(--midori-solid)}
+  @media(max-width:560px){
+    #gateOverlay{padding:0;align-items:flex-start}
+    .gate-card{border-left:none;border-right:none;border-radius:0;
+      padding:28px 20px 36px;min-height:100dvh;margin:0}
+    .gate-opts{grid-template-columns:1fr}
+    .gate-opt{font-size:15px;min-height:52px;padding:12px 14px}
+    .gate-ti{font-size:19px}
+    .gate-ql{font-size:15px}
+    .gate-sub{padding:16px;font-size:15px}
+  }
+
+  /* ===== Layout ===== */
+  .wrap{max-width:1200px;margin:0 auto;padding:56px 40px 80px}
+  .eyebrow{font-family:var(--latin);font-style:italic;font-weight:500;
+    letter-spacing:var(--ls-wide);color:var(--shu-solid);font-size:17px;margin:0 0 14px}
+  .eyebrow .en{text-transform:uppercase;font-style:normal;letter-spacing:.34em;
+    font-family:var(--body);font-size:11px;color:var(--ink-faint);margin-left:10px}
+  h1{font-family:var(--serif);font-weight:600;color:var(--ink-strong);
+    font-size:clamp(28px,4vw,48px);line-height:1.2;margin:0 0 16px;letter-spacing:.02em}
+  .lede{max-width:680px;color:#555;margin:0 0 6px;font-size:15px}
+  .datasrc{font-size:11.5px;color:var(--ink-faint);margin:10px 0 36px;
+    letter-spacing:.03em}
+  .datasrc a{color:var(--ink-faint);text-underline-offset:3px}
+  .rule{height:1px;background:var(--line);margin:34px 0}
+
+  /* ===== Stats bar ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);margin-bottom:42px}
+  .stat{background:var(--panel);padding:22px 24px}
+  .stat .k{font-size:10px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+    text-transform:uppercase;font-family:var(--body)}
+  .stat .v{font-family:var(--latin);font-weight:600;color:var(--ink-strong);
+    font-size:30px;line-height:1.1;margin-top:8px;letter-spacing:0}
+  .stat .v .u{font-family:var(--gothic);font-size:14px;font-weight:500;
+    color:var(--ink);margin-left:4px}
+  .stat .s{font-size:12px;color:var(--ink-faint);margin-top:2px}
+
+  /* ===== Tabs ===== */
+  .tab-nav{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:32px}
+  .tab-btn{padding:10px 24px;border:none;background:none;cursor:pointer;
+    font-family:var(--gothic);font-size:13px;letter-spacing:var(--ls-wide);
+    color:var(--ink-faint);border-bottom:2px solid transparent;
+    margin-bottom:-1px;transition:color .15s,border-color .15s}
+  .tab-btn.active{color:var(--ink-strong);border-bottom-color:var(--ink-strong)}
+  .tab-btn:hover{color:var(--ink)}
+
+  /* ===== Ranking ===== */
+  .rank-controls{display:flex;align-items:center;gap:12px;margin-bottom:16px;
+    flex-wrap:wrap}
+  .rank-sort-label{font-size:11px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+    text-transform:uppercase}
+  .rank-sort-btns{display:flex;gap:1px}
+  .sort-btn{padding:5px 12px;border:1px solid var(--line);background:var(--panel);
+    font-family:var(--gothic);font-size:12px;cursor:pointer;color:var(--ink-faint);
+    transition:background .12s,color .12s}
+  .sort-btn.active{background:var(--ink-strong);color:#fff;border-color:var(--ink-strong)}
+  .rank-list{border:1px solid var(--line);background:var(--panel)}
+  .rank-row{display:grid;grid-template-columns:32px 100px 22px 1fr 88px;
+    align-items:center;gap:8px;padding:7px 16px;border-bottom:1px solid var(--panel-soft);
+    cursor:pointer;transition:background .1s}
+  .rank-row:last-child{border-bottom:none}
+  .rank-row:hover{background:var(--panel-soft)}
+  .rank-n{font-family:var(--latin);font-size:15px;color:var(--ink-faint);text-align:right}
+  .rank-name{font-family:var(--gothic);font-size:13.5px;font-weight:500;
+    color:var(--ink-strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .party-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .rank-bar-wrap{height:8px;background:var(--panel-soft);border-radius:1px;overflow:hidden}
+  .rank-bar{height:100%;border-radius:1px;transition:width .4s var(--ease)}
+  .rank-nil{font-size:11px;color:var(--ink-faint);letter-spacing:.03em}
+  .rank-val{font-family:var(--latin);font-weight:500;font-size:14px;
+    color:var(--ink-strong);text-align:right;white-space:nowrap}
+  .rank-zero .rank-val{color:var(--ink-faint)}
+  .show-all-btn{display:block;width:100%;padding:12px;margin-top:8px;
+    border:1px solid var(--line);background:var(--panel);cursor:pointer;
+    font-family:var(--gothic);font-size:12.5px;color:var(--ink-faint);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;transition:background .12s}
+  .show-all-btn:hover{background:var(--panel-soft)}
+
+  /* ===== Party comparison ===== */
+  .party-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+  .party-card{background:var(--panel);border:1px solid var(--line);padding:20px 22px}
+  .pc-name{font-family:var(--gothic);font-weight:700;font-size:13px;
+    margin-bottom:14px;padding-bottom:8px;border-bottom:3px solid var(--pc,#ccc)}
+  .pc-total{font-family:var(--latin);font-weight:600;font-size:26px;
+    color:var(--ink-strong);line-height:1;margin-bottom:2px}
+  .pc-label{font-size:10.5px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+    text-transform:uppercase;margin-bottom:12px}
+  .pc-row{display:flex;justify-content:space-between;font-size:12.5px;
+    color:#555;margin-bottom:4px}
+  .pc-row .val{font-family:var(--latin);font-weight:500;color:var(--ink-strong)}
+
+  .party-chart{background:var(--panel);border:1px solid var(--line);padding:24px 28px}
+  .pc-chart-title{font-size:11px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+    text-transform:uppercase;margin-bottom:16px}
+  .pc-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .pc-bar-label{font-family:var(--gothic);font-size:13px;width:80px;flex-shrink:0}
+  .pc-bar-wrap{flex:1;height:22px;background:var(--panel-soft);border-radius:2px;
+    overflow:hidden}
+  .pc-bar{height:100%;border-radius:2px;display:flex;align-items:center;
+    padding-left:8px;transition:width .5s var(--ease)}
+  .pc-bar-val{font-size:11px;color:var(--ink-faint);white-space:nowrap;
+    margin-left:6px;font-family:var(--latin)}
+
+  /* ===== Search/Card grid ===== */
+  .search-controls{display:flex;align-items:center;gap:10px;margin-bottom:20px;
+    flex-wrap:wrap}
+  .search-input{padding:9px 14px;border:1px solid var(--line);background:var(--panel);
+    font-family:var(--gothic);font-size:14px;color:var(--ink);width:240px;
+    outline:none;letter-spacing:.03em}
+  .search-input:focus{border-color:var(--accent)}
+  .filter-btns{display:flex;gap:1px;flex-wrap:wrap}
+  .filter-btn{padding:7px 14px;border:1px solid var(--line);background:var(--panel);
+    font-family:var(--gothic);font-size:12px;cursor:pointer;color:var(--ink-faint);
+    transition:background .12s,color .12s;white-space:nowrap}
+  .filter-btn.active{background:var(--ink-strong);color:#fff;border-color:var(--ink-strong)}
+
+  .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .lg-card{background:var(--panel);border:1px solid var(--line);padding:18px 20px;
+    cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .lg-card:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .lg-card.expanded{border-color:var(--ink-strong)}
+  .card-hd{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+  .card-avatar{width:42px;height:42px;border-radius:50%;background:var(--panel-soft);
+    flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--gothic);font-size:16px;font-weight:700;overflow:hidden}
+  .card-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .card-info .card-name{font-family:var(--gothic);font-weight:700;font-size:15px;
+    color:var(--ink-strong);margin-bottom:3px}
+  .party-tag{display:inline-block;padding:2px 7px;font-size:10.5px;
+    font-family:var(--gothic);color:#fff;letter-spacing:.04em;border-radius:2px}
+  .card-val{font-family:var(--latin);font-weight:600;font-size:22px;
+    color:var(--ink-strong);margin-bottom:2px;line-height:1}
+  .card-val-label{font-size:10.5px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+    text-transform:uppercase}
+  .card-date{font-size:11px;color:var(--ink-faint);margin-top:8px}
+
+  /* Holdings expand */
+  .holdings-wrap{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+    display:none}
+  .lg-card.expanded .holdings-wrap{display:block}
+  .holdings-title{font-size:10.5px;letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:8px}
+  .holding-row{display:grid;grid-template-columns:1fr auto auto;gap:6px;
+    padding:5px 0;border-bottom:1px solid var(--panel-soft);font-size:12.5px;
+    align-items:baseline}
+  .holding-row:last-child{border-bottom:none}
+  .h-name{color:var(--ink)}
+  .h-owner{font-size:11px;color:var(--ink-faint)}
+  .h-val{font-family:var(--latin);font-weight:500;color:var(--ink-strong);text-align:right}
+  .h-src-stock{color:var(--shu-solid)}
+  .h-src-fund{color:var(--midori-solid)}
+  .no-holdings{font-size:13px;color:var(--ink-faint);font-style:italic;padding:8px 0}
+
+  /* ===== Loading ===== */
+  #loading{text-align:center;padding:80px 20px;color:var(--ink-faint);font-size:14px}
+  .spinner{width:28px;height:28px;border:2.5px solid var(--line);
+    border-top-color:var(--ink-faint);border-radius:50%;
+    animation:spin .8s linear infinite;margin:0 auto 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ===== Footer ===== */
+  .footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--ink-faint);line-height:1.8}
+  .footer a{color:var(--ink-faint);text-underline-offset:3px}
+
+  /* ===== Responsive ===== */
+  @media(max-width:900px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .party-grid{grid-template-columns:repeat(2,1fr)}
+    .card-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:600px){
+    .wrap{padding:36px 18px 60px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .party-grid{grid-template-columns:1fr 1fr}
+    .card-grid{grid-template-columns:1fr}
+    .rank-row{grid-template-columns:24px 80px 16px 1fr 72px;gap:6px;padding:7px 10px}
+    .rank-name{font-size:12.5px}
+    .rank-val{font-size:13px}
+    .search-input{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<!-- 注音守門員（與 01 子專案共用同一 localStorage key） -->
+<div id="gateOverlay">
+  <div class="gate-card">
+    <p class="gate-ey">身份驗證 · Identity Check</p>
+    <h2 class="gate-ti">台灣注音符號小測驗</h2>
+    <p class="gate-de">本站資料涉及台灣地方選舉及立法委員財產。請先回答以下 3 道注音符號（ㄅㄆㄇㄈ）題目，驗證您具備閱讀繁體中文的基本能力。</p>
+    <div id="gateQs"></div>
+    <button id="gateBtn" class="gate-sub" disabled>確認送出</button>
+    <div id="gateMsg" class="gate-msg" hidden></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="eyebrow">立委財產申報 <span class="en">Legislator Wealth · 11th Term</span></p>
+  <h1>立委持股地圖</h1>
+  <p class="lede">第11屆立法委員（2024年就任）依法向監察院申報之股票與基金持股。108位立委中，82位申報持有有價證券，申報股票總估算市值約 18.6億元。</p>
+  <p class="datasrc">資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">legislator-wealth.tw</a>（解析自監察院廉政專刊）· 申報僅涵蓋有價證券；不動產、存款等類別尚無政府結構化開放資料。</p>
+
+  <!-- Stats -->
+  <div class="stats" id="statsBar">
+    <div class="stat">
+      <div class="k">本屆立委</div>
+      <div class="v">108 <span class="u">人</span></div>
+      <div class="s">第11屆立法院</div>
+    </div>
+    <div class="stat">
+      <div class="k">股票申報估算市值</div>
+      <div class="v" id="statTotal">—</div>
+      <div class="s">全院合計</div>
+    </div>
+    <div class="stat">
+      <div class="k">申報持股立委</div>
+      <div class="v" id="statHolders">—</div>
+      <div class="s">其餘 26 位無股票申報</div>
+    </div>
+    <div class="stat">
+      <div class="k">最高申報持股</div>
+      <div class="v" id="statTop">—</div>
+      <div class="s" id="statTopName">—</div>
+    </div>
+  </div>
+
+  <!-- Tab nav -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('rank')">持股排行</button>
+    <button class="tab-btn" onclick="switchTab('party')">政黨比較</button>
+    <button class="tab-btn" onclick="switchTab('search')">立委搜尋</button>
+  </nav>
+
+  <!-- Tab panels -->
+  <div id="tabRank"><div id="loading"><div class="spinner"></div>載入申報資料⋯</div></div>
+  <div id="tabParty" hidden></div>
+  <div id="tabSearch" hidden></div>
+
+  <div class="footer">
+    <p>資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">政治人物持股平台（legislator-wealth.tw）</a>，原始資料出自<a href="https://sunshine.cy.gov.tw" target="_blank" rel="noopener">監察院陽光法令主題網</a>廉政專刊。本頁面純供公共監督與研究用途，不作任何投資建議，亦不代表對任何立委之負面評價；持股申報僅涵蓋有價證券，不代表全部財產。如有疑問請以監察院公告為準。</p>
+  </div>
+</div>
+
+<script>
+/* ===== 注音守門員 ===== */
+(function(){
+  const SK='twcfm_v1';
+  const overlay=document.getElementById('gateOverlay');
+  if(localStorage.getItem(SK)){overlay.hidden=true;return;}
+  const POOL=[
+    {q:'「台灣」的注音符號是？',opts:['ㄊㄞˊ ㄨㄢ','ㄊㄞ ㄨㄢˊ','ㄊㄞˊ ㄨㄣ','ㄊㄟˊ ㄨㄢ'],ans:'ㄊㄞˊ ㄨㄢ'},
+    {q:'「選舉」的注音是？',opts:['ㄒㄩㄢˇ ㄐㄩˇ','ㄒㄩㄢ ㄐㄩˇ','ㄒㄩㄣˇ ㄐㄩˇ','ㄒㄧㄢˇ ㄐㄩˇ'],ans:'ㄒㄩㄢˇ ㄐㄩˇ'},
+    {q:'「民主」的注音是？',opts:['ㄇㄧㄣˊ ㄓㄨˇ','ㄇㄧㄣ ㄓㄨˇ','ㄇㄧㄣˊ ㄓㄨ','ㄇㄣˊ ㄓㄨˇ'],ans:'ㄇㄧㄣˊ ㄓㄨˇ'},
+    {q:'「政治」的注音是？',opts:['ㄓㄥˋ ㄓˋ','ㄓㄥ ㄓˋ','ㄓㄥˋ ㄓ','ㄓㄡˋ ㄓˋ'],ans:'ㄓㄥˋ ㄓˋ'},
+    {q:'「投票」的注音是？',opts:['ㄊㄡˊ ㄆㄧㄠˋ','ㄊㄡˊ ㄆㄧㄠ','ㄊㄡ ㄆㄧㄠˋ','ㄊㄡˊ ㄅㄧㄠˋ'],ans:'ㄊㄡˊ ㄆㄧㄠˋ'},
+    {q:'ㄓㄨㄥ ㄏㄨㄚˊ ㄇㄧㄣˊ ㄍㄨㄛˊ 是哪個國家？',opts:['中華民國','中華人民共和國','中國民主聯盟','大清帝國'],ans:'中華民國'},
+    {q:'「獻金」的「獻」注音是？',opts:['ㄒㄧㄢˋ','ㄒㄧㄢˊ','ㄒㄧㄣˋ','ㄒㄩㄢˋ'],ans:'ㄒㄧㄢˋ'},
+    {q:'「縣市長」的注音是？',opts:['ㄒㄧㄢˋ ㄕˋ ㄓㄤˇ','ㄒㄧㄢ ㄕˋ ㄓㄤˇ','ㄒㄧㄢˋ ㄕ ㄓㄤˇ','ㄒㄧㄢˋ ㄕˋ ㄓㄤ'],ans:'ㄒㄧㄢˋ ㄕˋ ㄓㄤˇ'},
+    {q:'注音字母「ㄅ ㄆ ㄇ ㄈ」是哪類聲母？',opts:['唇音','舌尖音','舌根音','喉音'],ans:'唇音'},
+    {q:'「立法委員」的「委」注音是？',opts:['ㄨㄟˇ','ㄨㄟˊ','ㄨㄟˋ','ㄨㄟ'],ans:'ㄨㄟˇ'},
+    {q:'「候選人」的注音是？',opts:['ㄏㄡˋ ㄒㄩㄢˇ ㄖㄣˊ','ㄏㄡ ㄒㄩㄢˇ ㄖㄣˊ','ㄏㄡˋ ㄒㄩㄢ ㄖㄣˊ','ㄏㄡˋ ㄒㄩㄢˇ ㄖㄣ'],ans:'ㄏㄡˋ ㄒㄩㄢˇ ㄖㄣˊ'},
+    {q:'「公民」的注音是？',opts:['ㄍㄨㄥ ㄇㄧㄣˊ','ㄍㄨㄥˊ ㄇㄧㄣˊ','ㄍㄨㄥ ㄇㄧㄣ','ㄍㄨˋ ㄇㄧㄣˊ'],ans:'ㄍㄨㄥ ㄇㄧㄣˊ'},
+  ];
+  const qs=[...POOL].sort(()=>Math.random()-.5).slice(0,3)
+    .map(q=>({...q,opts:[...q.opts].sort(()=>Math.random()-.5)}));
+  const sel=new Array(3).fill(null);
+  const container=document.getElementById('gateQs');
+  const btn=document.getElementById('gateBtn');
+  const msg=document.getElementById('gateMsg');
+  function paint(){
+    container.innerHTML=qs.map((q,qi)=>`
+      <div class="gate-q">
+        <p class="gate-ql">${qi+1}. ${q.q}</p>
+        <div class="gate-opts">${q.opts.map(o=>`
+          <label class="gate-opt${sel[qi]===o?' sel':''}">
+            <input type="radio" name="q${qi}" value="${o}" style="display:none"
+              ${sel[qi]===o?'checked':''}>
+            <span class="gate-rb"></span>${o}
+          </label>`).join('')}
+        </div>
+      </div>`).join('');
+    container.querySelectorAll('.gate-opt').forEach(lbl=>{
+      lbl.addEventListener('click',()=>{
+        const inp=lbl.querySelector('input');
+        const qi=parseInt(inp.name.slice(1));
+        sel[qi]=inp.value;
+        container.querySelectorAll(`[name="${inp.name}"]`).forEach(i=>{
+          i.closest('.gate-opt').classList.toggle('sel',i===inp);
+          i.closest('.gate-opt').querySelector('.gate-rb').style.background=
+            i===inp?'var(--shu-solid)':'';
+          i.closest('.gate-opt').querySelector('.gate-rb').style.borderColor=
+            i===inp?'var(--shu-solid)':'#bbb';
+        });
+        btn.disabled=sel.some(s=>s===null);
+        msg.hidden=true;
+      });
+    });
+  }
+  paint();
+  btn.addEventListener('click',()=>{
+    const wrong=qs.filter((q,i)=>sel[i]!==q.ans);
+    if(wrong.length===0){
+      msg.textContent='✓ 通過驗證，歡迎使用本站';
+      msg.className='gate-msg ok'; msg.hidden=false;
+      localStorage.setItem(SK,'1');
+      setTimeout(()=>{overlay.hidden=true;},600);
+    } else {
+      msg.textContent=`答錯 ${wrong.length} 題，請重新作答`;
+      msg.className='gate-msg'; msg.hidden=false;
+      sel.fill(null); paint();
+      btn.disabled=true;
+    }
+  });
+})();
+
+/* ===== 主程式 ===== */
+const API='https://legislator-wealth.tw';
+
+const PARTY_COLOR={
+  '中國國民黨':'#0B3FA0',
+  '民主進步黨':'#1B761E',
+  '台灣民眾黨':'#1BBCCC',
+  '無黨籍':'#777777',
+};
+const PARTY_SHORT={
+  '中國國民黨':'國',
+  '民主進步黨':'民',
+  '台灣民眾黨':'眾',
+  '無黨籍':'無',
+};
+const PARTY_ALIAS={
+  'kmt':'中國國民黨','dpp':'民主進步黨','tpp':'台灣民眾黨','ind':'無黨籍',
+};
+
+let DATA=[];
+let rankSort='desc';
+let showAllRank=false;
+let searchQ='';
+let filterParty='';
+let curTab='rank';
+
+function pColor(p){return PARTY_COLOR[p]||'#aaa';}
+function pShort(p){return PARTY_SHORT[p]||'？';}
+
+function fmtMoney(v){
+  if(!v||v===0)return '—';
+  if(v>=1e8)return (v/1e8).toFixed(2)+'億';
+  if(v>=1e4)return Math.round(v/1e4).toLocaleString()+'萬';
+  return v.toLocaleString()+'元';
+}
+
+function partyOf(lg){
+  return lg.meta?.party||lg.party||PARTY_ALIAS[lg.meta?.party]||'無黨籍';
+}
+
+function valOf(lg){
+  return lg.stockSummary?.estimatedMarketValueTotal||0;
+}
+
+/* ----- Init ----- */
+async function init(){
+  try{
+    const res=await fetch(`${API}/api/legislators.json`);
+    if(!res.ok)throw new Error('fetch failed');
+    DATA=await res.json();
+    renderStats();
+    renderRank();
+  }catch(e){
+    document.getElementById('tabRank').innerHTML=
+      `<p style="color:var(--shu-solid);padding:40px 0;">資料載入失敗，請稍後重新整理。</p>`;
+  }
+}
+
+/* ----- Stats ----- */
+function renderStats(){
+  const holders=DATA.filter(lg=>valOf(lg)>0);
+  const total=DATA.reduce((s,lg)=>s+valOf(lg),0);
+  const top=[...DATA].sort((a,b)=>valOf(b)-valOf(a))[0];
+
+  document.getElementById('statTotal').innerHTML=
+    fmtMoney(total)+' <span class="u">元</span>';
+  document.getElementById('statHolders').innerHTML=
+    holders.length+' <span class="u">人</span>';
+  const topVal=valOf(top);
+  document.getElementById('statTop').innerHTML=
+    fmtMoney(topVal)+' <span class="u">元</span>';
+  document.getElementById('statTopName').textContent=
+    top?`${top.name}（${partyOf(top)}）`:'';
+}
+
+/* ----- Tab switching ----- */
+function switchTab(tab){
+  curTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['rank','party','search'][i]===tab);
+  });
+  document.getElementById('tabRank').hidden=tab!=='rank';
+  document.getElementById('tabParty').hidden=tab!=='party';
+  document.getElementById('tabSearch').hidden=tab!=='search';
+  if(tab==='rank'&&!document.querySelector('.rank-list'))renderRank();
+  if(tab==='party'&&!document.querySelector('.party-grid'))renderParty();
+  if(tab==='search'&&!document.querySelector('.card-grid'))renderSearch();
+}
+
+/* ----- Rank tab ----- */
+function renderRank(){
+  const sorted=[...DATA].sort((a,b)=>{
+    if(rankSort==='desc')return valOf(b)-valOf(a);
+    if(rankSort==='asc')return valOf(a)-valOf(b);
+    return a.name.localeCompare(b.name,'zh');
+  });
+  const maxVal=Math.max(...sorted.map(valOf),1);
+  const SHOW=40;
+  const shown=showAllRank?sorted:sorted.slice(0,SHOW);
+
+  const rows=shown.map((lg,i)=>{
+    const val=valOf(lg);
+    const party=partyOf(lg);
+    const color=pColor(party);
+    const barW=val>0?Math.max(1,Math.round(val/maxVal*100)):0;
+    const globalRank=sorted.indexOf(lg)+1;
+    return `<div class="rank-row${val===0?' rank-zero':''}" onclick="openHoldingModal('${lg.slug}')">
+      <span class="rank-n">${globalRank}</span>
+      <span class="rank-name">${lg.name}</span>
+      <span class="party-dot" style="background:${color}"></span>
+      <div class="rank-bar-wrap">
+        ${val>0?`<div class="rank-bar" style="width:${barW}%;background:${color}"></div>`:
+                `<span class="rank-nil">無申報</span>`}
+      </div>
+      <span class="rank-val">${val>0?fmtMoney(val):'—'}</span>
+    </div>`;
+  }).join('');
+
+  const showAllBtn=!showAllRank&&sorted.length>SHOW?
+    `<button class="show-all-btn" onclick="showAllRank=true;renderRank()">
+      顯示全部 ${sorted.length} 人（含無申報者）
+    </button>`:'';
+
+  document.getElementById('tabRank').innerHTML=`
+    <div class="rank-controls">
+      <span class="rank-sort-label">排序</span>
+      <div class="rank-sort-btns">
+        <button class="sort-btn${rankSort==='desc'?' active':''}"
+          onclick="rankSort='desc';showAllRank=false;renderRank()">持股高→低</button>
+        <button class="sort-btn${rankSort==='asc'?' active':''}"
+          onclick="rankSort='asc';showAllRank=false;renderRank()">持股低→高</button>
+        <button class="sort-btn${rankSort==='name'?' active':''}"
+          onclick="rankSort='name';showAllRank=false;renderRank()">姓名</button>
+      </div>
+    </div>
+    <div class="rank-list">${rows}</div>
+    ${showAllBtn}
+    <p style="font-size:11.5px;color:var(--ink-faint);margin-top:10px">
+      點擊任一列查看個別持股明細 · 顯示中：${shown.length}/${sorted.length} 人
+    </p>`;
+}
+
+/* ----- Party tab ----- */
+function renderParty(){
+  const parties=['中國國民黨','民主進步黨','台灣民眾黨','無黨籍'];
+  const stats=Object.fromEntries(parties.map(p=>{
+    const members=DATA.filter(lg=>partyOf(lg)===p);
+    const holders=members.filter(lg=>valOf(lg)>0);
+    const total=members.reduce((s,lg)=>s+valOf(lg),0);
+    const avg=holders.length?Math.round(total/holders.length):0;
+    const topLg=[...members].sort((a,b)=>valOf(b)-valOf(a))[0];
+    return [p,{count:members.length,holders:holders.length,total,avg,top:topLg}];
+  }));
+
+  const maxTotal=Math.max(...parties.map(p=>stats[p].total),1);
+  const maxAvg=Math.max(...parties.map(p=>stats[p].avg),1);
+
+  const cards=parties.map(p=>{
+    const s=stats[p];
+    const c=pColor(p);
+    return `<div class="party-card" style="--pc:${c}">
+      <div class="pc-name" style="border-bottom-color:${c}">${p}</div>
+      <div class="pc-total">${fmtMoney(s.total)}</div>
+      <div class="pc-label">總股票申報估值</div>
+      <div class="pc-row"><span>立委人數</span><span class="val">${s.count} 人</span></div>
+      <div class="pc-row"><span>有申報持股</span><span class="val">${s.holders} 人</span></div>
+      <div class="pc-row"><span>平均（有申報者）</span><span class="val">${fmtMoney(s.avg)}</span></div>
+      <div class="pc-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">
+        <span>最高：${s.top?.name||'—'}</span>
+        <span class="val">${fmtMoney(valOf(s.top)||0)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const barsTotal=parties.map(p=>{
+    const s=stats[p];
+    const w=s.total?Math.round(s.total/maxTotal*100):0;
+    const c=pColor(p);
+    return `<div class="pc-bar-row">
+      <span class="pc-bar-label">${p.replace('中國','').replace('台灣','').replace('民主進步','民進')}</span>
+      <div class="pc-bar-wrap">
+        <div class="pc-bar" style="width:${w}%;background:${c}"></div>
+      </div>
+      <span class="pc-bar-val">${fmtMoney(s.total)}</span>
+    </div>`;
+  }).join('');
+
+  const barsAvg=parties.map(p=>{
+    const s=stats[p];
+    const w=s.avg?Math.round(s.avg/maxAvg*100):0;
+    const c=pColor(p);
+    return `<div class="pc-bar-row">
+      <span class="pc-bar-label">${p.replace('中國','').replace('台灣','').replace('民主進步','民進')}</span>
+      <div class="pc-bar-wrap">
+        <div class="pc-bar" style="width:${w}%;background:${c}"></div>
+      </div>
+      <span class="pc-bar-val">${fmtMoney(s.avg)}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tabParty').innerHTML=`
+    <div class="party-grid">${cards}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="party-chart">
+        <div class="pc-chart-title">各政黨 · 總申報估值比較</div>
+        ${barsTotal}
+      </div>
+      <div class="party-chart">
+        <div class="pc-chart-title">各政黨 · 平均申報估值（有申報者）</div>
+        ${barsAvg}
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--ink-faint);margin-top:16px;line-height:1.8">
+      ※ 股票申報估值為依監察院廉政專刊申報數據，股數乘以台灣證交所收盤價之估算，非申報當時市值。未申報股票之立委（26位）未計入平均。
+    </p>`;
+}
+
+/* ----- Search tab ----- */
+function renderSearch(){
+  const searchEl=`
+    <div class="search-controls">
+      <input class="search-input" id="searchInput" placeholder="搜尋姓名⋯"
+        value="${searchQ}" oninput="searchQ=this.value;updateCards()">
+      <div class="filter-btns">
+        ${['','中國國民黨','民主進步黨','台灣民眾黨','無黨籍'].map(p=>`
+          <button class="filter-btn${filterParty===p?' active':''}"
+            onclick="filterParty='${p}';updateFilterBtns();updateCards()">
+            ${p||'全部'}
+          </button>`).join('')}
+      </div>
+    </div>
+    <div class="card-grid" id="cardGrid"></div>
+    <p id="cardCount" style="font-size:11.5px;color:var(--ink-faint);margin-top:12px"></p>`;
+  document.getElementById('tabSearch').innerHTML=searchEl;
+  updateCards();
+}
+
+function updateFilterBtns(){
+  document.querySelectorAll('.filter-btn').forEach((b,i)=>{
+    const parties=['','中國國民黨','民主進步黨','台灣民眾黨','無黨籍'];
+    b.classList.toggle('active',filterParty===parties[i]);
+  });
+}
+
+function updateCards(){
+  const q=searchQ.trim();
+  const filtered=DATA.filter(lg=>{
+    if(filterParty&&partyOf(lg)!==filterParty)return false;
+    if(q&&!lg.name.includes(q))return false;
+    return true;
+  }).sort((a,b)=>valOf(b)-valOf(a));
+
+  const grid=document.getElementById('cardGrid');
+  const count=document.getElementById('cardCount');
+  if(!grid)return;
+
+  grid.innerHTML=filtered.map(lg=>{
+    const val=valOf(lg);
+    const party=partyOf(lg);
+    const color=pColor(party);
+    const initials=lg.name.slice(-1);
+    return `<div class="lg-card" id="card-${lg.slug}" onclick="toggleCard('${lg.slug}')">
+      <div class="card-hd">
+        <div class="card-avatar" style="color:${color};border:2px solid ${color}22">
+          <img src="${API}/avatars/${encodeURIComponent(lg.name)}.jpg"
+            onerror="this.style.display='none'" alt="${lg.name}">
+          ${initials}
+        </div>
+        <div class="card-info">
+          <div class="card-name">${lg.name}</div>
+          <span class="party-tag" style="background:${color}">${party.replace('中國','').replace('台灣','')}</span>
+        </div>
+      </div>
+      <div class="card-val">${val>0?fmtMoney(val):'—'}</div>
+      <div class="card-val-label">股票申報估值</div>
+      <div class="card-date">申報日：${lg.latestDeclarationDate||'—'}</div>
+      <div class="holdings-wrap" id="hw-${lg.slug}">
+        ${renderHoldingsList(lg)}
+      </div>
+    </div>`;
+  }).join('');
+
+  count.textContent=`顯示 ${filtered.length} / ${DATA.length} 人`;
+}
+
+function toggleCard(slug){
+  const card=document.getElementById(`card-${slug}`);
+  if(card)card.classList.toggle('expanded');
+}
+
+function renderHoldingsList(lg){
+  const h=lg.holdings||[];
+  if(!h.length)return `<div class="holdings-title">持股明細</div><p class="no-holdings">無申報有價證券</p>`;
+  const sorted=[...h].sort((a,b)=>(b.ntdTotal||0)-(a.ntdTotal||0));
+  const rows=sorted.map(it=>`
+    <div class="holding-row">
+      <span class="h-name ${it.source==='stock'?'h-src-stock':'h-src-fund'}">${it.name}</span>
+      <span class="h-owner">${it.owner}</span>
+      <span class="h-val">${fmtMoney(it.marketValue||it.ntdTotal||0)}</span>
+    </div>`).join('');
+  return `<div class="holdings-title">持股明細（共${h.length}筆）</div>${rows}`;
+}
+
+/* ----- Holdings modal (from rank tab) ----- */
+function openHoldingModal(slug){
+  const lg=DATA.find(d=>d.slug===slug);
+  if(!lg)return;
+  const existing=document.getElementById('holdModal');
+  if(existing)existing.remove();
+
+  const val=valOf(lg);
+  const party=partyOf(lg);
+  const color=pColor(party);
+  const h=lg.holdings||[];
+  const sorted=[...h].sort((a,b)=>(b.ntdTotal||0)-(a.ntdTotal||0));
+  const rows=sorted.length?sorted.map(it=>`
+    <div class="holding-row">
+      <span class="h-name ${it.source==='stock'?'h-src-stock':'h-src-fund'}">${it.name}</span>
+      <span class="h-owner">${it.owner}</span>
+      <span class="h-val">${fmtMoney(it.marketValue||it.ntdTotal||0)}</span>
+    </div>`).join(''):
+    `<p class="no-holdings">無申報有價證券</p>`;
+
+  const modal=document.createElement('div');
+  modal.id='holdModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:8888;background:rgba(0,0,0,.4);'+
+    'display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
+  modal.innerHTML=`
+    <div style="background:var(--panel);max-width:540px;width:100%;padding:28px 32px;
+      position:relative;max-height:90vh;overflow-y:auto">
+      <button onclick="document.getElementById('holdModal').remove()"
+        style="position:absolute;top:14px;right:16px;border:none;background:none;
+          font-size:22px;cursor:pointer;color:var(--ink-faint);line-height:1">&times;</button>
+      <p style="font-size:10.5px;letter-spacing:var(--ls-wide);color:var(--ink-faint);
+        text-transform:uppercase;margin:0 0 8px">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;
+          background:${color};margin-right:6px;vertical-align:middle"></span>${party}
+      </p>
+      <h3 style="font-family:var(--serif);font-size:22px;margin:0 0 4px;
+        color:var(--ink-strong)">${lg.name}</h3>
+      <p style="font-family:var(--latin);font-size:28px;font-weight:600;
+        color:${val>0?'var(--ink-strong)':'var(--ink-faint)'};margin:0 0 6px">
+        ${val>0?fmtMoney(val):'無股票申報'}
+      </p>
+      <p style="font-size:11.5px;color:var(--ink-faint);margin:0 0 20px">
+        申報日期：${lg.latestDeclarationDate||'—'}</p>
+      <div style="border-top:1px solid var(--line);padding-top:14px">
+        <div class="holdings-title">持股明細（共${h.length}筆）</div>
+        ${rows}
+      </div>
+    </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+}
+
+init();
+</script>
+</body>
+</html>
