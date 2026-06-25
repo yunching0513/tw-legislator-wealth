@@ -295,12 +295,14 @@
     <button class="tab-btn active" onclick="switchTab('rank')">持股排行</button>
     <button class="tab-btn" onclick="switchTab('party')">政黨比較</button>
     <button class="tab-btn" onclick="switchTab('search')">立委搜尋</button>
+    <button class="tab-btn" onclick="switchTab('growth')">財產成長</button>
   </nav>
 
   <!-- Tab panels -->
   <div id="tabRank"><div id="loading"><div class="spinner"></div>載入申報資料⋯</div></div>
   <div id="tabParty" hidden></div>
   <div id="tabSearch" hidden></div>
+  <div id="tabGrowth" hidden></div>
 
   <div class="footer">
     <p>資料來源：<a href="https://legislator-wealth.tw" target="_blank" rel="noopener">legislator-wealth.tw</a>（有價證券估值）· <a href="https://sunshine.cy.gov.tw" target="_blank" rel="noopener">監察院廉政專刊</a> PDF（存款、不動產、負債，由本站 pdfplumber 解析）。本頁面純供公共監督與研究用途，不作任何投資建議；存款與負債為申報面額，不動產未申報市值，如有疑問請以監察院公告為準。</p>
@@ -391,8 +393,10 @@ const PARTY_COLOR={
 
 let DATA=[];      // stock API
 let FULL={};      // slug → full property data
+let GROWTH=[];    // 2024→2025 delta data (49 legislators)
 let rankMetric='deposits';
 let showAllRank=false;
+let growthDir='up'; // 'up' | 'down'
 let searchQ='';
 let filterParty='';
 let curTab='rank';
@@ -424,12 +428,82 @@ function metricValOf(lg){
   return depositOf(lg);
 }
 
+/* ----- Growth tab ----- */
+function renderGrowth(){
+  const panel=document.getElementById('tabGrowth');
+  if(!GROWTH.length){
+    panel.innerHTML='<p style="color:var(--ink-faint);padding:40px 0;font-size:14px">成長資料載入中⋯</p>';
+    return;
+  }
+
+  const valid=GROWTH.filter(r=>r.delta.liquidity!=null);
+  const sorted=[...valid].sort((a,b)=>b.delta.liquidity-a.delta.liquidity);
+  const displayed=growthDir==='up'?sorted:[...sorted].reverse();
+  const maxAbs=Math.max(...valid.map(r=>Math.abs(r.delta.liquidity)),1);
+
+  const rows=displayed.map((r,i)=>{
+    const d=r.delta.liquidity;
+    const party=r.party||'無黨籍';
+    const color=pColor(party);
+    const positive=d>=0;
+    const barColor=positive?'var(--midori-solid)':'var(--shu-solid)';
+    const barW=Math.max(1,Math.round(Math.abs(d)/maxAbs*100));
+    const sign=positive?'+':'-';
+    const displayVal=fmtMoney(Math.abs(d));
+
+    const dep2024=r.totals2024?.deposits||0;
+    const dep2025=r.totals2025?.deposits||0;
+    const sec2024=r.totals2024?.securities||0;
+    const sec2025=r.totals2025?.securities||0;
+    const dbt2024=r.totals2024?.debts||0;
+    const dbt2025=r.totals2025?.debts||0;
+
+    return `<div class="rank-row" onclick="openModal('${r.slug}')">
+      <span class="rank-n">${i+1}</span>
+      <span class="rank-name">${r.name}</span>
+      <span class="party-dot" style="background:${color}"></span>
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1">
+        <div class="rank-bar-wrap">
+          <div class="rank-bar" style="width:${barW}%;background:${barColor}"></div>
+        </div>
+        <div style="font-size:10.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          存款 ${fmtMoney(dep2024)}→${fmtMoney(dep2025)} ·
+          有價 ${fmtMoney(sec2024)}→${fmtMoney(sec2025)} ·
+          負債 ${fmtMoney(dbt2024)}→${fmtMoney(dbt2025)}
+        </div>
+      </div>
+      <span class="rank-val" style="color:${barColor}">${sign}${displayVal}</span>
+    </div>`;
+  }).join('');
+
+  const dirBtns=['up','down'].map(d=>`
+    <button class="sort-btn${growthDir===d?' active':''}"
+      onclick="growthDir='${d}';renderGrowth()">
+      ${d==='up'?'成長最多':'縮減最多'}
+    </button>`).join('');
+
+  panel.innerHTML=`
+    <div class="rank-controls">
+      <span class="rank-sort-label">排序</span>
+      <div class="rank-sort-btns">${dirBtns}</div>
+      <span style="font-size:11px;color:var(--ink-faint);margin-left:4px">
+        共 ${valid.length} 人（2024年11月 → 2025年11月申報）
+      </span>
+    </div>
+    <div class="rank-list">${rows}</div>
+    <p style="font-size:11.5px;color:var(--ink-faint);margin-top:12px;line-height:1.8">
+      ※ <b>流動性淨值變化</b> = (存款＋有價證券－負債) 之一年差值。不含不動產（申報值為公告現值，非市值）。<br>
+      僅含同時有 2024 年及 2025 年申報紀錄之 ${valid.length} 位立委。點擊列可查看完整財產明細。
+    </p>`;
+}
+
 /* ----- Init ----- */
 async function init(){
   try{
-    const [stockRes,fullRes]=await Promise.all([
+    const [stockRes,fullRes,growthRes]=await Promise.all([
       fetch(`${API}/api/legislators.json`),
       fetch('./data/legislators_full.json'),
+      fetch('./data/legislators_growth.json'),
     ]);
     if(!stockRes.ok)throw new Error('stock fetch failed');
     DATA=await stockRes.json();
@@ -437,6 +511,7 @@ async function init(){
       const arr=await fullRes.json();
       arr.forEach(f=>{if(f.slug)FULL[f.slug]=f;});
     }
+    if(growthRes.ok) GROWTH=await growthRes.json();
     renderStats();
     renderRank();
   }catch(e){
@@ -479,14 +554,16 @@ function renderStats(){
 function switchTab(tab){
   curTab=tab;
   document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    b.classList.toggle('active',['rank','party','search'][i]===tab);
+    b.classList.toggle('active',['rank','party','search','growth'][i]===tab);
   });
   document.getElementById('tabRank').hidden=tab!=='rank';
   document.getElementById('tabParty').hidden=tab!=='party';
   document.getElementById('tabSearch').hidden=tab!=='search';
+  document.getElementById('tabGrowth').hidden=tab!=='growth';
   if(tab==='rank'&&!document.querySelector('.rank-list'))renderRank();
   if(tab==='party'&&!document.querySelector('.party-grid'))renderParty();
   if(tab==='search'&&!document.querySelector('.card-grid'))renderSearch();
+  if(tab==='growth')renderGrowth();
 }
 
 /* ----- Rank tab ----- */

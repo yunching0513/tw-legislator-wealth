@@ -1,0 +1,1259 @@
+[
+  {
+    "name": "丁學忠",
+    "party": "中國國民黨",
+    "slug": "ding-xue-zhong",
+    "gid2024": "A0262-00262",
+    "gid2025": "A0302-00001",
+    "totals2024": {
+      "deposits": 773864,
+      "debts": 2697696
+    },
+    "totals2025": {
+      "deposits": 688513,
+      "debts": 2492808
+    },
+    "delta": {
+      "deposits": -85351,
+      "securities": 0,
+      "debts": -204888,
+      "liquidity": 119537
+    }
+  },
+  {
+    "name": "伍麗華",
+    "party": "民主進步黨",
+    "slug": "wu-li-hua",
+    "gid2024": "A0262-00306",
+    "gid2025": "A0302-00005",
+    "totals2024": {
+      "deposits": 9653136,
+      "debts": 2254400
+    },
+    "totals2025": {
+      "deposits": 9521939,
+      "debts": 2133648,
+      "investments": 167146
+    },
+    "delta": {
+      "deposits": -131197,
+      "securities": 0,
+      "debts": -120752,
+      "liquidity": -10445
+    }
+  },
+  {
+    "name": "何欣純",
+    "party": "民主進步黨",
+    "slug": "he-xin-chun",
+    "gid2024": "A0262-00311",
+    "gid2025": "A0302-00011",
+    "totals2024": {
+      "deposits": 2898039,
+      "debts": 29364877
+    },
+    "totals2025": {
+      "deposits": 1989943,
+      "securities": 200000,
+      "stocks": 200000,
+      "debts": 29293495
+    },
+    "delta": {
+      "deposits": -908096,
+      "securities": 200000,
+      "debts": -71382,
+      "liquidity": -636714
+    }
+  },
+  {
+    "name": "吳宗憲",
+    "party": "中國國民黨",
+    "slug": "wu-zong-xian",
+    "gid2024": "A0262-00342",
+    "gid2025": "A0302-00040",
+    "totals2024": {
+      "deposits": 13436852,
+      "securities": 2286230,
+      "stocks": 2286230,
+      "jewelry": 4950000,
+      "debts": 775000
+    },
+    "totals2025": {
+      "deposits": 4798030,
+      "securities": 11948550,
+      "stocks": 11948550,
+      "jewelry": 4950000,
+      "receivables": 1400000,
+      "debts": 475000
+    },
+    "delta": {
+      "deposits": -8638822,
+      "securities": 9662320,
+      "debts": -300000,
+      "liquidity": 1323498
+    }
+  },
+  {
+    "name": "吳琪銘",
+    "party": "民主進步黨",
+    "slug": "wu-qi-ming",
+    "gid2024": "A0266-00011",
+    "gid2025": "A0305-00129",
+    "totals2024": {
+      "securities": 12336790,
+      "stocks": 12336790,
+      "debts": 69364937
+    },
+    "totals2025": {
+      "securities": 10766730,
+      "stocks": 10766730,
+      "debts": 71163501
+    },
+    "delta": {
+      "deposits": 0,
+      "securities": -1570060,
+      "debts": 1798564,
+      "liquidity": -3368624
+    }
+  },
+  {
+    "name": "李柏毅",
+    "party": "民主進步黨",
+    "slug": "li-bai-yi",
+    "gid2024": "A0266-00040",
+    "gid2025": "A0302-00052",
+    "totals2024": {
+      "deposits": 6845043,
+      "securities": 1734738,
+      "stocks": 1734738,
+      "debts": 37620390,
+      "investments": 4000000
+    },
+    "totals2025": {
+      "deposits": 6399100,
+      "securities": 921680,
+      "stocks": 921680,
+      "debts": 33684393,
+      "investments": 4000000
+    },
+    "delta": {
+      "deposits": -445943,
+      "securities": -813058,
+      "debts": -3935997,
+      "liquidity": 2676996
+    }
+  },
+  {
+    "name": "林月琴",
+    "party": "民主進步黨",
+    "slug": "lin-yue-qin",
+    "gid2024": "A0254-00054",
+    "gid2025": "A0302-00090",
+    "totals2024": {
+      "deposits": 7682686,
+      "securities": 17555075,
+      "stocks": 9010000,
+      "bonds": 330871,
+      "funds": 8214204
+    },
+    "totals2025": {
+      "deposits": 5797684,
+      "securities": 22749796,
+      "stocks": 9038370,
+      "bonds": 421160,
+      "funds": 13290266,
+      "debts": 31246761
+    },
+    "delta": {
+      "deposits": -1885002,
+      "securities": 5194721,
+      "debts": 31246761,
+      "liquidity": -27937042
+    }
+  },
+  {
+    "name": "林岱樺",
+    "party": "民主進步黨",
+    "slug": "lin-dai-hua",
+    "gid2024": "A0266-00099",
+    "gid2025": "A0302-00105",
+    "totals2024": {
+      "deposits": 8003211
+    },
+    "totals2025": {
+      "deposits": 4726325
+    },
+    "delta": {
+      "deposits": -3276886,
+      "securities": 0,
+      "debts": 0,
+      "liquidity": -3276886
+    }
+  },
+  {
+    "name": "林思銘",
+    "party": "中國國民黨",
+    "slug": "lin-si-ming",
+    "gid2024": "A0266-00109",
+    "gid2025": "A0302-00109",
+    "totals2024": {
+      "deposits": 1503098,
+      "securities": 41860,
+      "stocks": 41860,
+      "debts": 62350974,
+      "investments": 4000
+    },
+    "totals2025": {
+      "deposits": 1530681,
+      "securities": 13120,
+      "stocks": 13120,
+      "debts": 60726012,
+      "investments": 4000
+    },
+    "delta": {
+      "deposits": 27583,
+      "securities": -28740,
+      "debts": -1624962,
+      "liquidity": 1623805
+    }
+  },
+  {
+    "name": "邱志偉",
+    "party": "民主進步黨",
+    "slug": "qiu-zhi-wei",
+    "gid2024": "A0266-00061",
+    "gid2025": "A0302-00059",
+    "totals2024": {
+      "deposits": 8596702,
+      "debts": 19803697
+    },
+    "totals2025": {
+      "deposits": 7248724,
+      "debts": 18747431
+    },
+    "delta": {
+      "deposits": -1347978,
+      "securities": 0,
+      "debts": -1056266,
+      "liquidity": -291712
+    }
+  },
+  {
+    "name": "邱若華",
+    "party": "中國國民黨",
+    "slug": "qiu-ruo-hua",
+    "gid2024": "A0255-00020",
+    "gid2025": "A0302-00065",
+    "totals2024": {
+      "deposits": 7667249,
+      "securities": 215470,
+      "stocks": 215470,
+      "debts": 12901854
+    },
+    "totals2025": {
+      "deposits": 6907037,
+      "securities": 114010,
+      "stocks": 114010,
+      "debts": 9943455
+    },
+    "delta": {
+      "deposits": -760212,
+      "securities": -101460,
+      "debts": -2958399,
+      "liquidity": 2096727
+    }
+  },
+  {
+    "name": "邱鎮軍",
+    "party": "中國國民黨",
+    "slug": "qiu-zhen-jun",
+    "gid2024": "A0266-00066",
+    "gid2025": "A0302-00070",
+    "totals2024": {
+      "cash": 170000,
+      "deposits": 10330688,
+      "securities": 80000,
+      "stocks": 80000,
+      "debts": 15299175
+    },
+    "totals2025": {
+      "cash": 200000,
+      "deposits": 15096988,
+      "securities": 320000,
+      "stocks": 320000,
+      "debts": 13435404
+    },
+    "delta": {
+      "deposits": 4766300,
+      "securities": 240000,
+      "debts": -1863771,
+      "liquidity": 6870071
+    }
+  },
+  {
+    "name": "邱議瑩",
+    "party": "民主進步黨",
+    "slug": "qiu-yi-ying",
+    "gid2024": "A0266-00071",
+    "gid2025": "A0302-00077",
+    "totals2024": {
+      "deposits": 17494580,
+      "securities": 4245757,
+      "stocks": 1233120,
+      "funds": 3012637,
+      "debts": 8472708
+    },
+    "totals2025": {
+      "deposits": 13022005,
+      "securities": 6734233,
+      "stocks": 1614100,
+      "funds": 5120133,
+      "debts": 8226038,
+      "investments": 1000000
+    },
+    "delta": {
+      "deposits": -4472575,
+      "securities": 2488476,
+      "debts": -246670,
+      "liquidity": -1737429
+    }
+  },
+  {
+    "name": "柯志恩",
+    "party": "中國國民黨",
+    "slug": "ke-zhi-en",
+    "gid2024": "A0254-00080",
+    "gid2025": "A0302-00180",
+    "totals2024": {
+      "deposits": 15089753,
+      "securities": 22122888,
+      "stocks": 937570,
+      "bonds": 5463455,
+      "funds": 15721862,
+      "debts": 17180608
+    },
+    "totals2025": {
+      "deposits": 13356828,
+      "securities": 22908565,
+      "stocks": 942340,
+      "bonds": 1461700,
+      "funds": 20504525,
+      "debts": 16521120
+    },
+    "delta": {
+      "deposits": -1732925,
+      "securities": 785677,
+      "debts": -659488,
+      "liquidity": -287760
+    }
+  },
+  {
+    "name": "洪孟楷",
+    "party": "中國國民黨",
+    "slug": "hong-meng-kai",
+    "gid2024": "A0266-00143",
+    "gid2025": "A0302-00189",
+    "totals2024": {
+      "deposits": 1452749,
+      "debts": 8066683
+    },
+    "totals2025": {
+      "deposits": 1952803,
+      "debts": 7505563
+    },
+    "delta": {
+      "deposits": 500054,
+      "securities": 0,
+      "debts": -561120,
+      "liquidity": 1061174
+    }
+  },
+  {
+    "name": "徐欣瑩",
+    "party": "中國國民黨",
+    "slug": "xu-xin-ying",
+    "gid2024": "A0255-00023",
+    "gid2025": "A0302-00194",
+    "totals2024": {
+      "securities": 1878253,
+      "stocks": 548990,
+      "bonds": 62252,
+      "funds": 1267011
+    },
+    "totals2025": {
+      "deposits": 2001367,
+      "securities": 6651122,
+      "stocks": 4524230,
+      "bonds": 625989,
+      "funds": 1500903,
+      "debts": 3500000
+    },
+    "delta": {
+      "deposits": 2001367,
+      "securities": 4772869,
+      "debts": 3500000,
+      "liquidity": 3274236
+    }
+  },
+  {
+    "name": "徐富癸",
+    "party": "民主進步黨",
+    "slug": "xu-fu-gui",
+    "gid2024": "A0255-00026",
+    "gid2025": "A0302-00200",
+    "totals2024": {
+      "deposits": 1945292,
+      "securities": 165774,
+      "funds": 165774,
+      "debts": 3645960
+    },
+    "totals2025": {
+      "deposits": 1554935,
+      "securities": 253335,
+      "funds": 253335,
+      "debts": 3251013
+    },
+    "delta": {
+      "deposits": -390357,
+      "securities": 87561,
+      "debts": -394947,
+      "liquidity": 92151
+    }
+  },
+  {
+    "name": "翁曉玲",
+    "party": "中國國民黨",
+    "slug": "weng-xiao-ling",
+    "gid2024": "A0254-00086",
+    "gid2025": "A0302-00205",
+    "totals2024": {
+      "deposits": 6994499,
+      "securities": 4396790,
+      "stocks": 1676280,
+      "funds": 2720510,
+      "debts": 836115
+    },
+    "totals2025": {
+      "deposits": 7145133,
+      "securities": 2825350,
+      "stocks": 1743770,
+      "funds": 1081580
+    },
+    "delta": {
+      "deposits": 150634,
+      "securities": -1571440,
+      "debts": -836115,
+      "liquidity": -584691
+    }
+  },
+  {
+    "name": "馬文君",
+    "party": "中國國民黨",
+    "slug": "ma-wen-jun",
+    "gid2024": "A0266-00217",
+    "gid2025": "A0305-00139",
+    "totals2024": {
+      "deposits": 12368143,
+      "securities": 3386070,
+      "stocks": 2281190,
+      "funds": 1104880
+    },
+    "totals2025": {
+      "deposits": 41967652
+    },
+    "delta": {
+      "deposits": 29599509,
+      "securities": -3386070,
+      "debts": 0,
+      "liquidity": 26213439
+    }
+  },
+  {
+    "name": "張宏陸",
+    "party": "民主進步黨",
+    "slug": "zhang-hong-lu",
+    "gid2024": "A0266-00231",
+    "gid2025": "A0302-00308",
+    "totals2024": {
+      "debts": 38962750
+    },
+    "totals2025": {
+      "debts": 39083781
+    },
+    "delta": {
+      "deposits": 0,
+      "securities": 0,
+      "debts": 121031,
+      "liquidity": -121031
+    }
+  },
+  {
+    "name": "張智倫",
+    "party": "中國國民黨",
+    "slug": "zhang-zhi-lun",
+    "gid2024": "A0254-00136",
+    "gid2025": "A0302-00322",
+    "totals2024": {
+      "cash": 357965,
+      "deposits": 36848917,
+      "securities": 34925500,
+      "stocks": 34925500,
+      "debts": 91500000,
+      "investments": 6638162
+    },
+    "totals2025": {
+      "cash": 357635,
+      "deposits": 74142433,
+      "securities": 34945545,
+      "stocks": 34885500,
+      "funds": 60045,
+      "jewelry": 7664315,
+      "receivables": 41000000,
+      "debts": 203333007,
+      "investments": 17451500
+    },
+    "delta": {
+      "deposits": 37293516,
+      "securities": 20045,
+      "debts": 111833007,
+      "liquidity": -74519446
+    }
+  },
+  {
+    "name": "莊瑞雄",
+    "party": "民主進步黨",
+    "slug": "zhuang-rui-xiong",
+    "gid2024": "A0266-00159",
+    "gid2025": "A0302-00215",
+    "totals2024": {
+      "deposits": 735574,
+      "debts": 14443134
+    },
+    "totals2025": {
+      "deposits": 1028036,
+      "debts": 10737928
+    },
+    "delta": {
+      "deposits": 292462,
+      "securities": 0,
+      "debts": -3705206,
+      "liquidity": 3997668
+    }
+  },
+  {
+    "name": "郭昱晴",
+    "party": "民主進步黨",
+    "slug": "guo-yu-qing",
+    "gid2024": "A0254-00092",
+    "gid2025": "A0302-00220",
+    "totals2024": {
+      "deposits": 1010572,
+      "securities": 1718222,
+      "stocks": 616240,
+      "funds": 1101982,
+      "jewelry": 600000,
+      "debts": 15358208
+    },
+    "totals2025": {
+      "deposits": 2584751,
+      "securities": 2671358,
+      "stocks": 549190,
+      "funds": 2122168,
+      "debts": 14416361
+    },
+    "delta": {
+      "deposits": 1574179,
+      "securities": 953136,
+      "debts": -941847,
+      "liquidity": 3469162
+    }
+  },
+  {
+    "name": "陳永康",
+    "party": "中國國民黨",
+    "slug": "chen-yong-kang",
+    "gid2024": "A0254-00098",
+    "gid2025": "A0302-00232",
+    "totals2024": {
+      "deposits": 19293466,
+      "securities": 350000,
+      "stocks": 350000,
+      "jewelry": 25550000
+    },
+    "totals2025": {
+      "deposits": 19327585,
+      "securities": 372330,
+      "stocks": 372330,
+      "jewelry": 25550000
+    },
+    "delta": {
+      "deposits": 34119,
+      "securities": 22330,
+      "debts": 0,
+      "liquidity": 56449
+    }
+  },
+  {
+    "name": "陳秀寳",
+    "party": "民主進步黨",
+    "slug": "chen-xiu-bao",
+    "gid2024": "A0266-00173",
+    "gid2025": "A0302-00239",
+    "totals2024": {
+      "cash": 122250,
+      "deposits": 1955350,
+      "securities": 65410,
+      "stocks": 42680,
+      "funds": 22730,
+      "debts": 1000252,
+      "investments": 9000
+    },
+    "totals2025": {
+      "cash": 85000,
+      "deposits": 2224330,
+      "securities": 150700,
+      "stocks": 52740,
+      "funds": 97960,
+      "debts": 924280,
+      "investments": 9000
+    },
+    "delta": {
+      "deposits": 268980,
+      "securities": 85290,
+      "debts": -75972,
+      "liquidity": 430242
+    }
+  },
+  {
+    "name": "陳俊宇",
+    "party": "民主進步黨",
+    "slug": "chen-jun-yu",
+    "gid2024": "A0266-00183",
+    "gid2025": "A0302-00245",
+    "totals2024": {
+      "securities": 17370,
+      "stocks": 17370,
+      "debts": 38040000,
+      "investments": 3000
+    },
+    "totals2025": {
+      "deposits": 2539944,
+      "securities": 17370,
+      "stocks": 17370,
+      "debts": 37540000,
+      "investments": 3000
+    },
+    "delta": {
+      "deposits": 2539944,
+      "securities": 0,
+      "debts": -500000,
+      "liquidity": 3039944
+    }
+  },
+  {
+    "name": "陳昭姿",
+    "party": "台灣民眾黨",
+    "slug": "chen-zhao-zi",
+    "gid2024": "A0254-00111",
+    "gid2025": "A0302-00251",
+    "totals2024": {
+      "deposits": 49944130,
+      "securities": 20195714,
+      "stocks": 20162114,
+      "funds": 33600
+    },
+    "totals2025": {
+      "deposits": 58169924,
+      "securities": 23827837,
+      "stocks": 23741786,
+      "funds": 86051
+    },
+    "delta": {
+      "deposits": 8225794,
+      "securities": 3632123,
+      "debts": 0,
+      "liquidity": 11857917
+    }
+  },
+  {
+    "name": "陳素月",
+    "party": "民主進步黨",
+    "slug": "chen-su-yue",
+    "gid2024": "A0266-00189",
+    "gid2025": "A0302-00270",
+    "totals2024": {
+      "deposits": 7151618,
+      "securities": 120000,
+      "stocks": 120000,
+      "debts": 3150893
+    },
+    "totals2025": {
+      "deposits": 18728715,
+      "debts": 3050795
+    },
+    "delta": {
+      "deposits": 11577097,
+      "securities": -120000,
+      "debts": -100098,
+      "liquidity": 11557195
+    }
+  },
+  {
+    "name": "陳培瑜",
+    "party": "民主進步黨",
+    "slug": "chen-pei-yu",
+    "gid2024": "A0266-00193",
+    "gid2025": "A0302-00275",
+    "totals2024": {
+      "deposits": 5677266,
+      "securities": 1084100,
+      "funds": 1084100,
+      "investments": 2000
+    },
+    "totals2025": {
+      "deposits": 6214304,
+      "securities": 1313240,
+      "stocks": 12140,
+      "funds": 1301100,
+      "investments": 2000
+    },
+    "delta": {
+      "deposits": 537038,
+      "securities": 229140,
+      "debts": 0,
+      "liquidity": 766178
+    }
+  },
+  {
+    "name": "陳菁徽",
+    "party": "中國國民黨",
+    "slug": "chen-jing-hui",
+    "gid2024": "A0254-00115",
+    "gid2025": "A0302-00282",
+    "totals2024": {
+      "deposits": 39225992,
+      "securities": 52216211,
+      "stocks": 49289355,
+      "bonds": 800000,
+      "funds": 2126856,
+      "jewelry": 3399230,
+      "debts": 396262331,
+      "investments": 111250000
+    },
+    "totals2025": {
+      "deposits": 41590342,
+      "securities": 133753570,
+      "stocks": 124986872,
+      "funds": 2178059,
+      "other_securities": 6588638,
+      "jewelry": 6143805,
+      "debts": 361879595
+    },
+    "delta": {
+      "deposits": 2364350,
+      "securities": 81537359,
+      "debts": -34382736,
+      "liquidity": 118284445
+    }
+  },
+  {
+    "name": "陳超明",
+    "party": "無黨籍",
+    "slug": "chen-chao-ming",
+    "gid2024": "A0266-00203",
+    "gid2025": "A0302-00295",
+    "totals2024": {
+      "deposits": 517040,
+      "securities": 109070,
+      "stocks": 109070,
+      "debts": 12495360
+    },
+    "totals2025": {
+      "deposits": 597216,
+      "securities": 116420,
+      "stocks": 116420,
+      "debts": 11619201
+    },
+    "delta": {
+      "deposits": 80176,
+      "securities": 7350,
+      "debts": -876159,
+      "liquidity": 963685
+    }
+  },
+  {
+    "name": "陳瑩",
+    "party": "民主進步黨",
+    "slug": "chen-ying",
+    "gid2024": "A0266-00210",
+    "gid2025": "A0302-00302",
+    "totals2024": {
+      "deposits": 6365197,
+      "securities": 1300000,
+      "stocks": 1300000,
+      "debts": 59096877
+    },
+    "totals2025": {
+      "cash": 2000000,
+      "deposits": 2504909,
+      "securities": 2530000,
+      "stocks": 2530000,
+      "debts": 57291136
+    },
+    "delta": {
+      "deposits": -3860288,
+      "securities": 1230000,
+      "debts": -1805741,
+      "liquidity": -824547
+    }
+  },
+  {
+    "name": "游顥",
+    "party": "中國國民黨",
+    "slug": "you-hao",
+    "gid2024": "A0266-00287",
+    "gid2025": "A0302-00349",
+    "totals2024": {
+      "deposits": 1345921,
+      "securities": 305750,
+      "stocks": 305750,
+      "debts": 1327014
+    },
+    "totals2025": {
+      "deposits": 1490522,
+      "securities": 300000,
+      "stocks": 300000,
+      "debts": 1631676
+    },
+    "delta": {
+      "deposits": 144601,
+      "securities": -5750,
+      "debts": 304662,
+      "liquidity": -165811
+    }
+  },
+  {
+    "name": "黃建賓",
+    "party": "中國國民黨",
+    "slug": "huang-jian-bin",
+    "gid2024": "A0266-00262",
+    "gid2025": "A0302-00342",
+    "totals2024": {
+      "deposits": 5656044,
+      "securities": 1254296,
+      "stocks": 1138360,
+      "funds": 115936,
+      "debts": 8850000
+    },
+    "totals2025": {
+      "deposits": 6799011,
+      "securities": 2186117,
+      "stocks": 2083360,
+      "funds": 102757,
+      "debts": 8550000
+    },
+    "delta": {
+      "deposits": 1142967,
+      "securities": 931821,
+      "debts": -300000,
+      "liquidity": 2374788
+    }
+  },
+  {
+    "name": "楊曜",
+    "party": "民主進步黨",
+    "slug": "yang-yao",
+    "gid2024": "A0266-00306",
+    "gid2025": "A0305-00155",
+    "totals2024": {
+      "deposits": 6735759,
+      "securities": 1408151,
+      "stocks": 406890,
+      "funds": 1001261,
+      "jewelry": 15000000,
+      "debts": 5077589,
+      "investments": 18000
+    },
+    "totals2025": {
+      "deposits": 4863630,
+      "securities": 6513110,
+      "stocks": 407430,
+      "funds": 6105680,
+      "jewelry": 15000000,
+      "debts": 4736374,
+      "investments": 18000
+    },
+    "delta": {
+      "deposits": -1872129,
+      "securities": 5104959,
+      "debts": -341215,
+      "liquidity": 3574045
+    }
+  },
+  {
+    "name": "楊瓊瓔",
+    "party": "中國國民黨",
+    "slug": "yang-qiong-ying",
+    "gid2024": "A0266-00313",
+    "gid2025": "A0302-00372",
+    "totals2024": {
+      "deposits": 21366325
+    },
+    "totals2025": {
+      "deposits": 20348610,
+      "jewelry": 1
+    },
+    "delta": {
+      "deposits": -1017715,
+      "securities": 0,
+      "debts": 0,
+      "liquidity": -1017715
+    }
+  },
+  {
+    "name": "萬美玲",
+    "party": "中國國民黨",
+    "slug": "wan-mei-ling",
+    "gid2024": "A0266-00292",
+    "gid2025": "A0302-00355",
+    "totals2024": {
+      "deposits": 29899584,
+      "debts": 5000000,
+      "investments": 20000000
+    },
+    "totals2025": {
+      "deposits": 31659261,
+      "debts": 5000000,
+      "investments": 20000000
+    },
+    "delta": {
+      "deposits": 1759677,
+      "securities": 0,
+      "debts": 0,
+      "liquidity": 1759677
+    }
+  },
+  {
+    "name": "葛如鈞",
+    "party": "中國國民黨",
+    "slug": "ge-ru-jun",
+    "gid2024": "A0255-00037",
+    "gid2025": "A0302-00361",
+    "totals2024": {
+      "deposits": 1250052,
+      "securities": 216771,
+      "stocks": 216771,
+      "jewelry": 1000389,
+      "debts": 19796870,
+      "investments": 1000100
+    },
+    "totals2025": {
+      "deposits": 4015336,
+      "securities": 2591941,
+      "stocks": 2493753,
+      "funds": 98188,
+      "jewelry": 1026864,
+      "receivables": 289061,
+      "debts": 18630125,
+      "investments": 1000100
+    },
+    "delta": {
+      "deposits": 2765284,
+      "securities": 2375170,
+      "debts": -1166745,
+      "liquidity": 6307199
+    }
+  },
+  {
+    "name": "蔡其昌",
+    "party": "民主進步黨",
+    "slug": "cai-qi-chang",
+    "gid2024": "A0266-00323",
+    "gid2025": "A0302-00377",
+    "totals2024": {
+      "deposits": 59366516,
+      "securities": 25821934,
+      "stocks": 1270,
+      "bonds": 1860000,
+      "funds": 23960664,
+      "jewelry": 2450000,
+      "debts": 13151559,
+      "investments": 21999999
+    },
+    "totals2025": {
+      "deposits": 60721288,
+      "securities": 32608221,
+      "funds": 32608221,
+      "jewelry": 2450000,
+      "receivables": 12000000,
+      "debts": 11916893,
+      "investments": 19799999
+    },
+    "delta": {
+      "deposits": 1354772,
+      "securities": 6786287,
+      "debts": -1234666,
+      "liquidity": 9375725
+    }
+  },
+  {
+    "name": "鄭天財",
+    "party": "中國國民黨",
+    "slug": "zheng-tian-cai",
+    "gid2024": "A0266-00332",
+    "gid2025": "A0302-00383",
+    "totals2024": {
+      "deposits": 31317439,
+      "securities": 1320000,
+      "stocks": 1320000
+    },
+    "totals2025": {
+      "deposits": 33292037,
+      "securities": 1195070,
+      "stocks": 792050,
+      "funds": 403020,
+      "receivables": 3050000
+    },
+    "delta": {
+      "deposits": 1974598,
+      "securities": -124930,
+      "debts": 0,
+      "liquidity": 1849668
+    }
+  },
+  {
+    "name": "魯明哲",
+    "party": "中國國民黨",
+    "slug": "lu-ming-zhe",
+    "gid2024": "A0266-00351",
+    "gid2025": "A0302-00392",
+    "totals2024": {
+      "cash": 450000,
+      "deposits": 9873422,
+      "securities": 170410,
+      "stocks": 170410,
+      "debts": 1942950
+    },
+    "totals2025": {
+      "deposits": 9870144,
+      "securities": 170410,
+      "stocks": 170410,
+      "receivables": 1000000,
+      "debts": 1952210
+    },
+    "delta": {
+      "deposits": -3278,
+      "securities": 0,
+      "debts": 9260,
+      "liquidity": -12538
+    }
+  },
+  {
+    "name": "盧縣一",
+    "party": "中國國民黨",
+    "slug": "lu-xian-yi",
+    "gid2024": "A0255-00047",
+    "gid2025": "A0302-00396",
+    "totals2024": {
+      "deposits": 1394928,
+      "securities": 410190,
+      "stocks": 410190,
+      "debts": 2022167
+    },
+    "totals2025": {
+      "deposits": 733182,
+      "securities": 385300,
+      "stocks": 385300,
+      "debts": 2756758
+    },
+    "delta": {
+      "deposits": -661746,
+      "securities": -24890,
+      "debts": 734591,
+      "liquidity": -1421227
+    }
+  },
+  {
+    "name": "賴士葆",
+    "party": "中國國民黨",
+    "slug": "lai-shi-bao",
+    "gid2024": "A0266-00355",
+    "gid2025": "A0302-00403",
+    "totals2024": {
+      "deposits": 10843708,
+      "securities": 2987293,
+      "stocks": 2676340,
+      "bonds": 310953
+    },
+    "totals2025": {
+      "deposits": 9631735,
+      "securities": 3352932,
+      "stocks": 1766840,
+      "bonds": 304892,
+      "funds": 1281200
+    },
+    "delta": {
+      "deposits": -1211973,
+      "securities": 365639,
+      "debts": 0,
+      "liquidity": -846334
+    }
+  },
+  {
+    "name": "賴惠員",
+    "party": "民主進步黨",
+    "slug": "lai-hui-yuan",
+    "gid2024": "A0266-00361",
+    "gid2025": "A0305-00164",
+    "totals2024": {
+      "securities": 606000,
+      "stocks": 606000,
+      "debts": 55450254,
+      "investments": 12000000
+    },
+    "totals2025": {
+      "securities": 716000,
+      "stocks": 716000,
+      "debts": 79377313,
+      "investments": 15000000
+    },
+    "delta": {
+      "deposits": 0,
+      "securities": 110000,
+      "debts": 23927059,
+      "liquidity": -23817059
+    }
+  },
+  {
+    "name": "謝龍介",
+    "party": "中國國民黨",
+    "slug": "xie-long-jie",
+    "gid2024": "A0254-00183",
+    "gid2025": "A0302-00410",
+    "totals2024": {
+      "deposits": 5710844,
+      "securities": 1050000,
+      "stocks": 1050000,
+      "debts": 30491560,
+      "investments": 2500000
+    },
+    "totals2025": {
+      "deposits": 8917285,
+      "securities": 4145936,
+      "stocks": 1533500,
+      "bonds": 2023614,
+      "funds": 588822,
+      "receivables": 44000000,
+      "debts": 26957085,
+      "investments": 2500000
+    },
+    "delta": {
+      "deposits": 3206441,
+      "securities": 3095936,
+      "debts": -3534475,
+      "liquidity": 9836852
+    }
+  },
+  {
+    "name": "顏寬恒",
+    "party": "中國國民黨",
+    "slug": "yan-kuan-heng",
+    "gid2024": "A0254-00190",
+    "gid2025": "A0302-00421",
+    "totals2024": {
+      "deposits": 50767688,
+      "securities": 46373536,
+      "stocks": 37447570,
+      "bonds": 8925966,
+      "debts": 173774758,
+      "investments": 5000
+    },
+    "totals2025": {
+      "deposits": 58103754,
+      "securities": 49532452,
+      "stocks": 40060240,
+      "bonds": 8772212,
+      "other_securities": 700000,
+      "debts": 170969342,
+      "investments": 18005000
+    },
+    "delta": {
+      "deposits": 7336066,
+      "securities": 3158916,
+      "debts": -2805416,
+      "liquidity": 13300398
+    }
+  },
+  {
+    "name": "羅廷瑋",
+    "party": "中國國民黨",
+    "slug": "luo-ting-wei",
+    "gid2024": "A0266-00389",
+    "gid2025": "A0305-00172",
+    "totals2024": {
+      "cash": 77910,
+      "deposits": 783609,
+      "debts": 37391357
+    },
+    "totals2025": {
+      "cash": 111200,
+      "deposits": 368609,
+      "jewelry": 5000,
+      "debts": 36918801
+    },
+    "delta": {
+      "deposits": -415000,
+      "securities": 0,
+      "debts": -472556,
+      "liquidity": 57556
+    }
+  },
+  {
+    "name": "羅美玲",
+    "party": "民主進步黨",
+    "slug": "luo-mei-ling",
+    "gid2024": "A0266-00400",
+    "gid2025": "A0305-00178",
+    "totals2024": {},
+    "totals2025": {},
+    "delta": {
+      "deposits": 0,
+      "securities": 0,
+      "debts": 0,
+      "liquidity": null
+    }
+  },
+  {
+    "name": "蘇清泉",
+    "party": "中國國民黨",
+    "slug": "su-qing-quan",
+    "gid2024": "A0254-00207",
+    "gid2025": "A0305-00182",
+    "totals2024": {
+      "deposits": 95327520,
+      "securities": 7011771,
+      "stocks": 6159990,
+      "bonds": 851781,
+      "jewelry": 7898250,
+      "debts": 27604797,
+      "investments": 455618701
+    },
+    "totals2025": {
+      "deposits": 107551692,
+      "securities": 8837416,
+      "stocks": 7541590,
+      "bonds": 860106,
+      "funds": 435720,
+      "jewelry": 7684750,
+      "receivables": 32519349,
+      "debts": 7496624,
+      "investments": 456118701
+    },
+    "delta": {
+      "deposits": 12224172,
+      "securities": 1825645,
+      "debts": -20108173,
+      "liquidity": 34157990
+    }
+  }
+]
